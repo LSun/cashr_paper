@@ -14,7 +14,7 @@ If you find any of the source code in this repository useful for your work, plea
 License
 -------
 
-Copyright (c) 2018, Lei Sun.
+Copyright (c) 2018, Lei Sun, Matthew Stephens
 
 All source code and software in this repository are made available under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl.html). See the [LICENSE](LICENSE) file for the full text of the license.
 
