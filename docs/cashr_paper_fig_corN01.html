@@ -361,7 +361,7 @@ div.section {
 </li>
 <li>
 <details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/edca65168d1b969cbaaf04b90915ba3ddd0e86e0" target="_blank">edca651</a> </summary></p>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/5b88a36f015c588a8a8681fefb14ada00d58fe25" target="_blank">5b88a36</a> </summary></p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 <pre><code>
 Ignored files:
@@ -369,12 +369,7 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    analysis/cashr_paper_fig_deconv_cache/
-
-Untracked files:
-    Untracked:  LICENSE
-    Untracked:  data/s.exp.rds
-    Untracked:  data/smemo.txt
-    Untracked:  figures/
+    Ignored:    figures/.DS_Store
 
 </code></pre>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
@@ -405,6 +400,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="text-align:left;">
+rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/LSun/cashr_paper/blob/5b88a36f015c588a8a8681fefb14ada00d58fe25/analysis/cashr_paper_fig_corN01.rmd" target="_blank">5b88a36</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-12
+</td>
+<td style="text-align:left;">
+wflow_publish(all = TRUE)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+html
+</td>
+<td style="text-align:left;">
+<a href="https://cdn.rawgit.com/LSun/cashr_paper/0f1f3b20a3351427e7a4545d47ffed5839a89c49/docs/cashr_paper_fig_corN01.html" target="_blank">0f1f3b2</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-12
+</td>
+<td style="text-align:left;">
+Build site.
+</td>
+</tr>
 <tr>
 <td style="text-align:left;">
 html
@@ -473,7 +502,7 @@ y.max &lt;- max(hist(z.sel[4, ], breaks = 100, plot = FALSE)$density)</code></pr
 <pre class="r"><code>## plotting
 
 # setEPS()
-# postscript(&quot;../figures/cor_N01_hist.eps&quot;, width = 8, height = 6)
+# postscript(&quot;figures/cor_N01_hist.eps&quot;, width = 8, height = 6)
 pdf(&quot;figures/cor_N01_hist.pdf&quot;, width = 8, height = 6)
 
 par(mfrow = c(2, 2)) # 2-by-2 grid of plots
