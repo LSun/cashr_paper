@@ -29,7 +29,7 @@ y.max <- max(hist(z.sel[4, ], breaks = 100, plot = FALSE)$density)
 ## plotting
 
 # setEPS()
-# postscript("../figures/cor_N01_hist.eps", width = 8, height = 6)
+# postscript("figures/cor_N01_hist.eps", width = 8, height = 6)
 pdf("figures/cor_N01_hist.pdf", width = 8, height = 6)
 
 par(mfrow = c(2, 2)) # 2-by-2 grid of plots
