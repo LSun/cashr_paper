@@ -41,5 +41,5 @@ This project is created with [workflowr][]. Grateful acknowledgement to [David G
 
 [David Gerard]: https://dcgerard.github.io/
 [Peter Carbonetto]: https://pcarbo.github.io/
-[John Blischak]: [https://jdblischak.com/
+[John Blischak]: https://jdblischak.com/
 [workflowr]: https://github.com/jdblischak/workflowr
