@@ -37,6 +37,9 @@ devtools::install_github("LSun/cashr")
 
 -------------
 
-This project is created with the help of [workflowr][]
+This project is created with [workflowr][]. Grateful acknowledgement to [David Gerard][], [Peter Carbonetto][], [John Blischak][].
 
+[David Gerard]: https://dcgerard.github.io/
+[Peter Carbonetto]: https://pcarbo.github.io/
+[John Blischak]: [https://jdblischak.com/
 [workflowr]: https://github.com/jdblischak/workflowr
