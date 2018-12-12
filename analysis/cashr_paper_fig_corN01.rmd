@@ -1,5 +1,5 @@
 ---
-title: "The histograms of correlated $N(0,1)$ figure"
+title: "Histograms of correlated $N(0,1)$"
 author: "Lei Sun"
 date: "2018-12-11"
 output:
@@ -7,40 +7,30 @@ output:
     code_folding: hide
 ---
 
-## Introduction
-
-Document the correlated $N(0, 1)$ figure in the `cashr` paper.
-
 ```{r}
-library(cashr)
+## read in data
+z.sel <- readRDS("data/z.sel.rds")
 ```
 
 ```{r}
-z.sel <- readRDS("../data/z.sel.rds")
-```
-
-```{r}
+## calculate the values of standardized Gaussian derivatives as basis functions at a number of plotting positions
 gd.ord <- 10
 x.plot = seq(- max(abs(z.sel)) - 2, max(abs(z.sel)) + 2, length = 1000)
-hermite = cashr:::Hermite(gd.ord)
-gd0.std = dnorm(x.plot)
-matrix_lik_plot = cbind(gd0.std)
-for (j in 1 : gd.ord) {
-  gd.std = (-1)^j * hermite[[j]](x.plot) * gd0.std / sqrt(factorial(j))
-  matrix_lik_plot = cbind(matrix_lik_plot, gd.std)
-}
-
-z = z.sel[4, ]
-omega <- cashr::ecn(z)$omega
-y.plot = matrix_lik_plot %*% omega
-z.hist = hist(z, breaks = 100, plot = FALSE)
-y.max = max(z.hist$density, y.plot, dnorm(0))
+x.plot.st.gd.mat <- cashr::std.gaussDeriv(x.plot, gd.ord)
 ```
 
 ```{r}
-setEPS()
-postscript("../output/paper/cor_z_hist.eps", width = 8, height = 6)
-#pdf("../output/paper/cor_z_hist.pdf", width = 8, height = 6)
+## calculate the range of x and y axes
+x.lim <- range(c(abs(z.sel), -abs(z.sel)))
+y.max <- max(hist(z.sel[4, ], breaks = 100, plot = FALSE)$density)
+```
+
+```{r}
+## plotting
+
+# setEPS()
+# postscript("../figures/cor_N01_hist.eps", width = 8, height = 6)
+pdf("figures/cor_N01_hist.pdf", width = 8, height = 6)
 
 par(mfrow = c(2, 2)) # 2-by-2 grid of plots
 par(oma = c(0.5, 2.5, 0, 0)) # make room (i.e. the 4's) for the overall x and y axis titles
@@ -51,12 +41,11 @@ par(mar = c(2, 2, 3.5, 1)) # make the plots be closer together
 # and set some other nice choices for graphics parameters
 for (i in 1 : 4) {
   z = z.sel[i, ]
-  w <- gdfit(z, gd.ord)$w
-  y.plot = matrix_lik_plot %*% w
-  z.hist = hist(z, breaks = 100, plot = FALSE)
-  hist(z, breaks = seq(-10, 10, by = 0.1), prob = TRUE, ylim = c(0, y.max), main = NULL, xlab = "", xlim = range(c(abs(z.sel), -abs(z.sel))))
+  omega <- cashr::ecn(z, gd.ord)$omega
+  y.plot = x.plot.st.gd.mat %*% omega
+  hist(z, breaks = seq(-10, 10, by = 0.1), prob = TRUE, ylim = c(0, y.max), main = NULL, xlab = "", xlim = x.lim)
   lines(x.plot, dnorm(x.plot), col = "blue", lwd = 2)
-  lines(x.plot, y.plot, col = scales::hue_pal()(5)[5], lwd = 2)
+  lines(x.plot, y.plot, col = 'red', lwd = 2)
   legend("topleft", bty = "n", paste0('(', letters[i], ')'), cex = 1.25)
 }
 
@@ -64,55 +53,7 @@ for (i in 1 : 4) {
 mtext('Density', side = 2, outer = TRUE, line = 1)
 mtext(latex2exp::TeX('Histograms of $10^4$ Correlated N(0,1) z-scores'), line = -2, outer = TRUE)
 
-legend("topleft", inset = c(-0.65, -0.25), legend = c("N(0, 1)", "Gaussian Derivatives"), lty = 1, lwd = 2, xpd = NA, col = c("blue", scales::hue_pal()(5)[5]), ncol = 2)
+legend("topleft", inset = c(-0.65, -0.25), legend = c("N(0, 1)", "Gaussian Derivatives"), lty = 1, lwd = 2, xpd = NA, col = c("blue", 'red'), ncol = 2)
 
 dev.off()
-```
-
-## `ashr::plot_diagnostic` on these correlated noise
-
-```{r, cache = TRUE, message = FALSE, warning = FALSE}
-# for (i in 1 : 4) {
-#   par(mfrow = c(1, 1))
-#   z = z.sel[i, ]
-#   hist(z, breaks = 100, prob = TRUE, ylim = c(0, y.max), main = NULL, xlab = "", xlim = range(c(abs(z.sel), -abs(z.sel))))
-#   lines(x.plot, dnorm(x.plot), col = "green", lwd = 2)
-#   par(mfrow = c(2, 2))
-#   fit.ash.n <- ashr::ash(z, 1, mixcompdist = "normal", method = "fdr")
-#   cat("mixcompdist = normal")
-#   ashr::plot_diagnostic(fit.ash.n, breaks = 100, plot.hist = TRUE)
-#   par(mfrow = c(2, 2))
-#   fit.ash.u <- ashr::ash(z, 1, mixcompdist = "uniform", method = "fdr")
-#   cat("mixcompdist = uniform")
-#   ashr::plot_diagnostic(fit.ash.u, breaks = 100, plot.hist = TRUE)
-#   par(mfrow = c(2, 2))
-#   fit.ash.hu <- ashr::ash(z, 1, mixcompdist = "halfuniform", method = "fdr")
-#   cat("mixcompdist = halfuniform")
-#   ashr::plot_diagnostic(fit.ash.hu, breaks = 100, plot.hist = TRUE)
-# }
-```
-
-## different methods applied to (c)
-
-```{r}
-## Multiple testing
-q <- 0.1
-z <- z.sel[3, ]
-p <- pnorm(-abs(z)) * 2
-## under 0.005
-sum(p <= 0.005)
-pnorm(qnorm(0.0025), 0, 1.6) * 2 * 1e4
-p.bh <- p.adjust(p, method = "BH")
-## BHq at FDR 0.05
-sum(p.bh <= q)
-fit.q <- qvalue::qvalue(p)
-## pi0 by qvalue
-fit.q$pi0
-## qvalue at FDR 0.05
-sum(fit.q$qvalues <= q)
-## pi0 by ashr
-fit.a <- ashr::ash(z, 1, mixcompdist = "normal", method = "fdr")
-ashr::get_pi0(fit.a)
-## ashr at FDR 0.05
-sum(ashr::get_qvalue(fit.a) <= q)
 ```

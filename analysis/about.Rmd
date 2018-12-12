@@ -5,4 +5,4 @@ output:
     toc: false
 ---
 
-Describe your project.
+A repo for documenting and reproducing all results and plots in Sun and Stephens (2018).

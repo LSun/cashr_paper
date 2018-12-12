@@ -1,9 +1,15 @@
 ---
-title: "Home"
+title: "cashr_paper"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
     toc: false
 ---
 
-Welcome to my research website.
+Generating results and plots in Sun and Stephens (2018)
+
+* [Figure 1: Histograms of correlated $N(0,1)$ null $z$-scores](cashr_paper_fig_corN01.html)
+* [Figure 2: Deconvolution by EBNM methods with correlated and independent noise](cashr_paper_fig_deconv.html)
+* [Figure 3: Should-but-not-tail property of correlation-induced inflation](cashr_paper_fig_shoulder.html)
+* [Figure 4: Standardized Gaussian derivatives](cashr_paper_fig_stdGD.html)
+* [Figure 7 and Table 1: Analyzing leukemia and mouse data](cashr_paper_fig_leukmouse.html)
