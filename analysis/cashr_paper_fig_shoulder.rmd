@@ -24,7 +24,7 @@ par(mar = c(4.5, 4.5, 2.5, 1))
 
 hist(z, breaks = seq(-10, 10, by = 0.1), prob = TRUE, ylim = c(0, dnorm(0)), xlab = "z-score", xlim = range(c(abs(z), -abs(z))), main = expression("(a): Histogram of correlated z-scores"), cex.main = 2, cex.lab = 2)
 
-x.plot = seq(- max(abs(z.sel)) - 2, max(abs(z.sel)) + 2, length = 1000)
+x.plot = seq(- max(abs(z)) - 2, max(abs(z)) + 2, length = 1000)
 lines(x.plot, dnorm(x.plot), col = "blue", lwd = 3)
 
 legend("topright", expression('N(0,1)'), lty = 1, col = 'blue', lwd = 3, cex = 1.75, bty = 'n', seg.len = 1.5, x.intersp = 0.5)
