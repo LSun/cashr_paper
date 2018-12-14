@@ -7,7 +7,9 @@ output:
     code_folding: hide
 ---
 
-## Deconv
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
 
 ```{r}
 ## load in package
@@ -59,13 +61,7 @@ CDF.KW <- function(h, interp = FALSE, eps = 0.001, bw = 0.7){
 ```{r, cache = TRUE, message = FALSE, warning = FALSE}
 ## deconvolution
 
-noise.label <- c(
-  'a',
-  'b',
-  'c',
-  'd',
-  'e'
-)
+noise.label <- paste0("(", letters[1 : 5], ")")
 
 deconv.list <- list()
 
@@ -148,15 +144,6 @@ for (i in 1 : 5) {
 
 ```{r}
 deconv.ggdata <- do.call(rbind.data.frame, deconv.list)
-noise.level <- c("(a)",
-                  "(b)",
-                  "(c)",
-                  "(d)",
-                  "(e)")
-deconv.ggdata$noise <- plyr::mapvalues(deconv.ggdata$noise,
-                                        from = noise.label,
-                                        to = noise.level
-                                        )
 deconv.ggdata$noise <- factor(deconv.ggdata$noise,
                               levels = levels(deconv.ggdata$noise)[c(1, 2, 5, 3, 4)]
                               )

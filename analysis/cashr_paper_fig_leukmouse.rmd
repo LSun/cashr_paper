@@ -7,6 +7,10 @@ output:
     code_folding: hide
 ---
 
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
 ## Common settings for both data sets
 
 ```{r}
@@ -81,8 +85,6 @@ text(4.4, 0.0925,
      bquote(atop("                     cashr corr noise dist", .(round(fit.cashr$fitted_g$pi[1], 2)) %*% hat(f))),
      col = method.col[5])
 arrows(2.9, 0.10, 2, 0.095, length = 0.1, angle = 20, col = method.col[5])
-
-dev.off()
 ```
 
 ```{r}
@@ -168,9 +170,9 @@ text(5.1, 0.090,
      bquote(atop("                    cashr corr noise dist", .(round(fit.cashr$fitted_g$pi[1], 2)) %*% hat(f))),
      col = method.col[5])
 arrows(3.5, 0.0975, 2.6, 0.0925, length = 0.1, angle = 20, col = method.col[5])
-
-dev.off()
 ```
+
+## Numbers of discoveries at nominal FDR = 0.1
 
 ```{r}
 ## number of discoveries at nominal FDR = 0.1
@@ -195,8 +197,6 @@ mouse.d <- c(
   ashr.d
 )
 ```
-
-## Numbers of discoveries at nominal FDR = 0.1
 
 ```{r}
 table.d <- cbind.data.frame(

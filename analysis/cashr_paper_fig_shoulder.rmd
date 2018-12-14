@@ -7,6 +7,10 @@ output:
     code_folding: hide
 ---
 
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
 ```{r}
 ## read in data
 z <- readRDS("../data/z.sel.rds")[3, ]
@@ -28,8 +32,6 @@ x.plot = seq(- max(abs(z)) - 2, max(abs(z)) + 2, length = 1000)
 lines(x.plot, dnorm(x.plot), col = "blue", lwd = 3)
 
 legend("topright", expression('N(0,1)'), lty = 1, col = 'blue', lwd = 3, cex = 1.75, bty = 'n', seg.len = 1.5, x.intersp = 0.5)
-
-dev.off()
 ```
 
 ```{r}
@@ -46,8 +48,6 @@ hist(p, prob = TRUE, breaks = seq(0, 1, by = 0.01), xlab = "p-value", main = exp
 segments(x0 = 0, x1 = 1, y0 = 1, y1 = 1, col = "blue", lwd = 3)
 
 legend("topright", expression('Uniform[0,1]'), lty = 1, col = 'blue', lwd = 3, cex = 1.75, bty = 'n', seg.len = 1.5, x.intersp = 0.5)
-
-dev.off()
 ```
 
 ```{r}
@@ -67,8 +67,6 @@ rect(xleft = c(-5, 2.5),
      ytop = c(0.05, 1),
      ybottom = c(0, 0.95), border = "red", lty = c(1, 5))
 legend("topleft", c("Correlated z-scores", expression(N(0,1)), expression(N(0, 1.6^2))), lty = c(1, 2, 4), col = c("black", "blue", "green"), lwd = 3, cex = 1.25, bty = 'n', seg.len = 1.5, x.intersp = 0.5)
-
-dev.off()
 ```
 
 ```{r}
@@ -86,8 +84,6 @@ lines(seq(-6, 6, by = 0.01), pnorm(seq(-6, 6, by = 0.01)), col = "blue", lwd = 3
 lines(seq(-6, 6, by = 0.01), pnorm(seq(-6, 6, by = 0.01), 0, 1.6), col = "green", lwd = 3, lty = 4)
 
 legend("topleft", c("Correlated z-scores", expression(N(0,1)), expression(N(0, 1.6^2))), lty = c(1, 2, 4), col = c("black", "blue", "green"), lwd = 3, cex = 1.25, bty = 'n', seg.len = 1.5, x.intersp = 0.5)
-
-dev.off()
 ```
 
 ```{r}
@@ -105,8 +101,6 @@ lines(seq(-6, 6, by = 0.01), pnorm(seq(-6, 6, by = 0.01)), col = "blue", lwd = 3
 lines(seq(-6, 6, by = 0.01), pnorm(seq(-6, 6, by = 0.01), 0, 1.6), col = "green", lwd = 3, lty = 4)
 
 legend("bottomright", c("Correlated z-scores", expression(N(0,1)), expression(N(0, 1.6^2))), lty = c(1, 2, 4), col = c("black", "blue", "green"), lwd = 3, cex = 1.25, bty = 'n', seg.len = 1.5, x.intersp = 0.5)
-
-dev.off()
 ```
 
 ```{r}
@@ -132,14 +126,13 @@ png("../figures/logpval_cor_null.png", width = 5, height = 5, units = "in", res 
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
+set.seed(777)
 plot(sample(-log(p)), ylim = c(0, y.max), ylab = "-log(p-value)", main = expression('(f): Correlated z-scores'), cex.main = 2, cex.lab = 2, pch = 19)
 abline(h = -log(c(
   0.005,
   pnorm(-sqrt(2 * log(1e4))) * 2,
   0.05 / 1e4
 )), lwd = 3, col = thresh.color, lty = c(1, 2, 4))
-
-dev.off()
 ```
 
 ```{r}
@@ -166,8 +159,6 @@ legend("top",
          latex2exp::TeX('p-value$= 0.005')
          ), lty = c(4, 2, 1), lwd = 3, xpd = NA,
        col = thresh.color[3 : 1], ncol = 1, bty = 'n', cex = 1.25)
-
-dev.off()
 ```
 
 ```{r}
@@ -194,6 +185,4 @@ abline(h = -log(c(
 #          "p = 0.005"
 #          ), lty = c(4, 2, 1), lwd = 3, xpd = NA,
 #        col = thresh.color[3 : 1], ncol = 1, cex = 1.5, bty = "n", x.intersp = 0.5, seg.len = 1.5)
-
-dev.off()
 ```

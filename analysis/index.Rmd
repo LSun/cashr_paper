@@ -6,10 +6,11 @@ output:
     toc: false
 ---
 
-Generating results and plots in Sun and Stephens (2018)
+We provide resources to reproduce Sun and Stephens (2018). Simply click `Code` on the following pages to see all the `R` code used to generate the results and plots in the paper.
 
 * [Figure 1: Histograms of correlated $N(0,1)$ null $z$-scores](cashr_paper_fig_corN01.html)
 * [Figure 2: Deconvolution by EBNM methods with correlated and independent noise](cashr_paper_fig_deconv.html)
 * [Figure 3: Should-but-not-tail property of correlation-induced inflation](cashr_paper_fig_shoulder.html)
 * [Figure 4: Standardized Gaussian derivatives](cashr_paper_fig_stdGD.html)
 * [Figure 7 and Table 1: Analyzing leukemia and mouse data](cashr_paper_fig_leukmouse.html)
+* [Figure A.1 and A.2: Evidence to show the realistically simulated null $z$-scores are indeed margianlly $N(0,1)$](cashr_paper_fig_ecdf.html)

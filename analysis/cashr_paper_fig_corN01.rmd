@@ -1,5 +1,5 @@
 ---
-title: "Histograms of correlated $N(0,1)$"
+title: "Histograms of correlated $N(0,1)$ $z$-scores"
 author: "Lei Sun"
 date: "2018-12-11"
 output:

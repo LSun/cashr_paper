@@ -7,6 +7,10 @@ output:
     code_folding: hide
 ---
 
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
 ```{r}
 ## calculate the values of standardized Gaussian derivatives at a number of plotting positions
 x.plot <- seq(-10, 10, length = 1000)
@@ -48,6 +52,4 @@ legend("topright", col = c(1, method.col[7 : 10]), lty = c(1, 8 : 11), lwd = 2, 
          latex2exp::TeX('$\\textit{l} = 9$'), 
          latex2exp::TeX('$\\textit{l} = 10$')
        ))
-
-dev.off()
 ```
