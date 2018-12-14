@@ -1,7 +1,7 @@
 name: "cashr_paper"
 output_dir: "../docs"
 navbar:
-  title: "cashr_paper"
+  title: "cashr paper"
   left:
     - text: "About"
       href: about.html
