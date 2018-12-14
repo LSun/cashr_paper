@@ -13,7 +13,7 @@
 
 <meta name="date" content="2018-12-12" />
 
-<title>Analyze the leukemia and mouse heart data</title>
+<title>Empirical CDF of simulated $z$-scores</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -325,7 +325,7 @@ div.section {
 
 
 
-<h1 class="title toc-ignore">Analyze the leukemia and mouse heart data</h1>
+<h1 class="title toc-ignore">Empirical CDF of simulated <span class="math inline">\(z\)</span>-scores</h1>
 <h4 class="author"><em>Lei Sun</em></h4>
 <h4 class="date"><em>2018-12-12</em></h4>
 
@@ -409,7 +409,7 @@ Message
 rmd
 </td>
 <td style="text-align:left;">
-<a href="https://github.com/LSun/cashr_paper/blob/97c0343dc757af97ba63c896287403304b73159d/analysis/cashr_paper_fig_leukmouse.rmd" target="_blank">97c0343</a>
+<a href="https://github.com/LSun/cashr_paper/blob/97c0343dc757af97ba63c896287403304b73159d/analysis/cashr_paper_fig_ecdf.rmd" target="_blank">97c0343</a>
 </td>
 <td style="text-align:left;">
 LSun
@@ -426,7 +426,7 @@ wflow_publish(all = TRUE)
 rmd
 </td>
 <td style="text-align:left;">
-<a href="https://github.com/LSun/cashr_paper/blob/63cd00ace4d251f8b7b031d2a0e2eab029a82cf1/analysis/cashr_paper_fig_leukmouse.rmd" target="_blank">63cd00a</a>
+<a href="https://github.com/LSun/cashr_paper/blob/63cd00ace4d251f8b7b031d2a0e2eab029a82cf1/analysis/cashr_paper_fig_ecdf.rmd" target="_blank">63cd00a</a>
 </td>
 <td style="text-align:left;">
 LSun
@@ -440,36 +440,19 @@ figures
 </tr>
 <tr>
 <td style="text-align:left;">
-html
-</td>
-<td style="text-align:left;">
-<a href="https://cdn.rawgit.com/LSun/cashr_paper/8bdb5bb26fbd7ecfbe283af2df398cb3f519d088/docs/cashr_paper_fig_leukmouse.html" target="_blank">8bdb5bb</a>
-</td>
-<td style="text-align:left;">
-LSun
-</td>
-<td style="text-align:left;">
-2018-12-12
-</td>
-<td style="text-align:left;">
-Build site.
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 rmd
 </td>
 <td style="text-align:left;">
-<a href="https://github.com/LSun/cashr_paper/blob/8d76fc87fe44f19e550398307edc3a1fd5dc2ede/analysis/cashr_paper_fig_leukmouse.rmd" target="_blank">8d76fc8</a>
+<a href="https://github.com/LSun/cashr_paper/blob/c2f61205dd6cbbbdd58c584cfefa4c5b18cbc1a6/analysis/cashr_paper_fig_ecdf.rmd" target="_blank">c2f6120</a>
 </td>
 <td style="text-align:left;">
-LSun
+Lei Sun
 </td>
 <td style="text-align:left;">
-2018-12-12
+2018-12-13
 </td>
 <td style="text-align:left;">
-figures
+data
 </td>
 </tr>
 </tbody>
@@ -477,206 +460,220 @@ figures
 </ul>
 </details>
 <hr />
-<div id="common-settings-for-both-data-sets" class="section level2">
-<h2>Common settings for both data sets</h2>
-<pre class="r"><code>## set colors for `locfdr` and `cashr`
-method.col &lt;- scales::hue_pal()(5)
+<pre class="r"><code>## load the data
+r &lt;- readRDS(&quot;../data/liver.rds&quot;)</code></pre>
+<pre class="r"><code>## load the script for the pipeline
+## to convert RNA-seq count data to summary statistics for each gene
+## in differential expression studies
+source(&quot;../code/RNAseq_pipeline.R&quot;)</code></pre>
+<pre class="r"><code>## common simulation settings
+ngene &lt;- 1e4
+nsamp &lt;- 5
+nsim &lt;- 1e4
+group &lt;- rep(0 : 1, each = nsamp)
 
-## calculate the values of standardized Gaussian derivatives as basis functions at a number of plotting positions
-x.plot &lt;- seq(-10, 10, length = 1000)
-gd.ord &lt;- 10
-x.plot.st.gd.mat &lt;- cashr::std.gaussDeriv(x.plot, gd.ord)
+## N(0,1) CDF plot positions
+x.plot &lt;- seq(-6, 6, by = 0.01)
+y.plot.norm &lt;- pnorm(x.plot)
 
-## ylim for both histograms
-y.lim &lt;- c(0, 0.235)
+## DKW bounds for the empirical CDF of 1e4 iid N(0,1) samples
+## with alpha = 1e-4
+upper.norm &lt;- y.plot.norm + sqrt(log(2 / (1 / nsim)) / (2 * ngene))
+lower.norm &lt;- y.plot.norm - sqrt(log(2 / (1 / nsim)) / (2 * ngene))
 
-## nominal FDR
-q &lt;- 0.1</code></pre>
+## choose the 1e4 most expressed genes
+Y = lcpm(r)
+subset = top_genes_index(ngene, Y)
+r = r[subset,]</code></pre>
+<div id="keep-gene-gene-correlations" class="section level2">
+<h2>Keep gene-gene correlations</h2>
+<pre class="r"><code>## simulate null z-scores from RNA-seq data
+## KEEP correlation
+set.seed(7)
+z.list &lt;- list()
+for (i in seq(nsim)) {
+  ## generate data
+  counts &lt;- r[, sample(ncol(r), 2 * nsamp)]
+  summary &lt;- count_to_summary(counts, group)
+  z.list[[i]] &lt;- summary$z
+}</code></pre>
+<pre class="r"><code>z.keep.cor &lt;- z.list
+saveRDS(z.list, &quot;../output/z_keep_cor.rds&quot;)</code></pre>
+<pre class="r"><code>z.keep.cor &lt;- readRDS(&#39;../output/z_keep_cor.rds&#39;)</code></pre>
+<pre class="r"><code>nsim &lt;- length(z.keep.cor)
+
+# setEPS()
+# postscript(&quot;../figures/ecdf_keep_cor.eps&quot;, width = 5, height = 5)
+png(&quot;../figures/ecdf_keep_cor.png&quot;, width = 5, height = 5, units = &quot;in&quot;, res = 1000)
+
+par(mar = c(4.5, 4.5, 2.5, 1))
+
+plot(0, type = &quot;n&quot;, xlim = c(-5, 5), ylim = c(0, 1), ylab = &quot;(Empirical) CDF&quot;, xlab = &quot;z-score&quot;, cex.lab = 2)
+title(expression(&#39;(a): Correlation Kept&#39;), cex.main = 2)
+
+for (i in seq(nsim)) {
+  lines(ecdf(z.keep.cor[[i]]), lwd = 1, col = &quot;grey75&quot;)
+}
+
+lines(x.plot, y.plot.norm, lwd = 2, col = &quot;blue&quot;)
+
+lines(x.plot[upper.norm &lt;= 1 &amp; upper.norm &gt;= 0], upper.norm[upper.norm &lt;= 1 &amp; upper.norm &gt;= 0], lty = 3, col = &quot;blue&quot;)
+lines(x.plot[lower.norm &lt;= 1 &amp; lower.norm &gt;= 0], lower.norm[lower.norm &lt;= 1 &amp; lower.norm &gt;= 0], lty = 3, col = &quot;blue&quot;)
+
+legend(&quot;bottomright&quot;, lwd = 2, col = c(&quot;grey75&quot;, &quot;blue&quot;), c(expression(&quot;F&quot;[p]), expression(&#39;N(0,1)&#39;)), bty = &quot;n&quot;, cex = 1.75, x.intersp = 0.5)</code></pre>
 </div>
-<div id="leukemia-data" class="section level2">
-<h2>Leukemia data</h2>
-<pre class="r"><code>## read in data
-load(url(&quot;http://statweb.stanford.edu/~ckirby/brad/LSI/datasets-and-programs/data/leukdata.RData&quot;))</code></pre>
-<pre class="r"><code>## obtain summary statistics using Smyth&#39;s pipeline
-design &lt;- model.matrix(~colnames(leukdata))
-lim = limma::lmFit(leukdata, design)
-r.ebayes = limma::eBayes(lim)
-p = r.ebayes$p.value[, 2]
-t = r.ebayes$t[, 2]
-z = -sign(t) * qnorm(p/2)
-X = lim$coefficients[, 2]
-s = X / z</code></pre>
-<pre class="r"><code>## fitting `locfdr` and `cashr`
-fit.locfdr &lt;- locfdr::locfdr(z, plot = 0)
-fit.cashr &lt;- cashr::cash(X, s)</code></pre>
-<pre class="r"><code>## calculate fitted empirical null distribution from `locfdr`, scaled by fitted null proportion
-y.plot.locfdr = dnorm(x.plot, fit.locfdr$fp0[3, 1], fit.locfdr$fp0[3, 2]) * fit.locfdr$fp0[3, 3]
+<div id="remove-gene-gene-correlations" class="section level2">
+<h2>Remove gene-gene correlations</h2>
+<pre class="r"><code>## simulate null z-scores from RNA-seq data
+## REMOVE correlation
+set.seed(7)
+z.list &lt;- list()
+for (i in seq(nsim)) {
+  ## generate data
+  counts &lt;- t(apply(r, 1, sample, 2 * nsamp))
+  summary &lt;- count_to_summary(counts, group)
+  z.list[[i]] &lt;- summary$z
+}</code></pre>
+<pre class="r"><code>z.remove.cor &lt;- z.list
+saveRDS(z.list, &quot;../output/z_remove_cor.rds&quot;)</code></pre>
+<pre class="r"><code>z.remove.cor &lt;- readRDS(&#39;../output/z_remove_cor.rds&#39;)</code></pre>
+<pre class="r"><code>nsim &lt;- length(z.remove.cor)
 
-## calculate fitted correlated noise distribution from `cashr`, scaled by fitted null proportion
-y.plot.cashr = x.plot.st.gd.mat %*% fit.cashr$omega * fit.cashr$fitted_g$pi[1]</code></pre>
+# setEPS()
+# postscript(&quot;../figures/ecdf_remove_cor.eps&quot;, width = 5, height = 5)
+png(&quot;../figures/ecdf_remove_cor.png&quot;, width = 5, height = 5, units = &quot;in&quot;, res = 1000)
+
+par(mar = c(4.5, 4.5, 2.5, 1))
+
+plot(0, type = &quot;n&quot;, xlim = c(-5, 5), ylim = c(0, 1), ylab = &quot;(Empirical) CDF&quot;, xlab = &quot;z-score&quot;, cex.lab = 2)
+title(expression(&#39;(b): Correlation Removed&#39;), cex.main = 2)
+
+for (i in seq(nsim)) {
+  lines(ecdf(z.remove.cor[[i]]), lwd = 1, col = &quot;grey75&quot;)
+}
+
+lines(x.plot, y.plot.norm, lwd = 2, col = &quot;blue&quot;)
+
+lines(x.plot[upper.norm &lt;= 1 &amp; upper.norm &gt;= 0], upper.norm[upper.norm &lt;= 1 &amp; upper.norm &gt;= 0], lty = 3, col = &quot;blue&quot;)
+lines(x.plot[lower.norm &lt;= 1 &amp; lower.norm &gt;= 0], lower.norm[lower.norm &lt;= 1 &amp; lower.norm &gt;= 0], lty = 3, col = &quot;blue&quot;)
+
+legend(&quot;bottomright&quot;, lwd = 2, col = c(&quot;grey75&quot;, &quot;blue&quot;), c(expression(&quot;F&quot;[p]), expression(&#39;N(0,1)&#39;)), bty = &quot;n&quot;, cex = 1.75, x.intersp = 0.5)</code></pre>
+</div>
+<div id="independent-n01-z-scores" class="section level2">
+<h2>Independent <span class="math inline">\(N(0,1)\)</span> <span class="math inline">\(z\)</span>-scores</h2>
 <pre class="r"><code># setEPS()
-# postscript(&quot;../figures/leukemia_hist.eps&quot;, height = 5, width = 6)
-pdf(&quot;../figures/leukemia_hist.pdf&quot;, height = 5, width = 6)
+# postscript(&quot;../figures/ecdf_iid.eps&quot;, width = 5, height = 5)
+png(&quot;../figures/ecdf_iid.png&quot;, width = 5, height = 5, units = &quot;in&quot;, res = 1000)
 
-#####
+par(mar = c(4.5, 4.5, 2.5, 1))
 
-hist(z, prob = TRUE, xlab = expression(paste(z, &quot;-score&quot;)), cex.lab = 1.25, breaks = 50, main = expression(&quot;Leukemia data&quot;), cex.main = 1.5, xlim = c(-10, 10), ylim = y.lim)
+plot(0, type = &quot;n&quot;, xlim = c(-5, 5), ylim = c(0, 1), ylab = &quot;(Empirical) CDF&quot;, xlab = &quot;z-score&quot;, cex.lab = 2)
+title(expression(&#39;(c): iid N(0,1) z-scores&#39;), cex.main = 2)
 
-lines(x.plot, dnorm(x.plot), col = &quot;orange&quot;, lty = 1, lwd = 2.5)
-lines(x.plot, y.plot.locfdr, col = method.col[3], lty = 1, lwd = 2.5)
-lines(x.plot, y.plot.cashr, col = method.col[5], lwd = 2.5)
+set.seed(777)
+for (i in seq(nsim)) {
+  lines(ecdf(rnorm(ngene)), lwd = 1, col = &quot;grey75&quot;)
+}
 
-text(-3.5, 0.188, &quot;N(0,1)&quot;, col = &quot;orange&quot;)
-arrows(-2.2, 0.188, -1.3, 0.183, length = 0.1, angle = 20, col = &quot;orange&quot;)
+lines(x.plot, y.plot.norm, lwd = 2, col = &quot;blue&quot;)
 
-text(-6.3, 0.11, bquote(atop(&quot; locfdr empirical null&quot;, .(round(fit.locfdr$fp0[3, 3], 2)) %*% N(.(round(fit.locfdr$fp0[3, 1], 2)), .(round(fit.locfdr$fp0[3, 2], 2))^2))), col = method.col[3])
-arrows(-2.8, 0.1115, -1.9, 0.1065, length = 0.1, angle = 20, col = method.col[3])
+lines(x.plot[upper.norm &lt;= 1 &amp; upper.norm &gt;= 0], upper.norm[upper.norm &lt;= 1 &amp; upper.norm &gt;= 0], lty = 3, col = &quot;blue&quot;)
+lines(x.plot[lower.norm &lt;= 1 &amp; lower.norm &gt;= 0], lower.norm[lower.norm &lt;= 1 &amp; lower.norm &gt;= 0], lty = 3, col = &quot;blue&quot;)
 
-text(4.4, 0.0925,
-     bquote(atop(&quot;                     cashr corr noise dist&quot;, .(round(fit.cashr$fitted_g$pi[1], 2)) %*% hat(f))),
-     col = method.col[5])
-arrows(2.9, 0.10, 2, 0.095, length = 0.1, angle = 20, col = method.col[5])</code></pre>
-<pre class="r"><code>## number of discoveries at nominal FDR = 0.1
-cashr.d &lt;- sum(fit.cashr$qvalue &lt;= q)
-
-locfdr.d &lt;- sum(ashr::qval.from.lfdr(fit.locfdr$fdr) &lt;= q)
-
-fit.BH &lt;- p.adjust(p, method = &quot;BH&quot;)
-BH.d &lt;- sum(fit.BH &lt;= q)
-
-fit.qvalue &lt;- qvalue::qvalue(p)
-qvalue.d &lt;- sum(fit.qvalue$qvalues &lt;= q)
-
-fit.ashr &lt;- ashr::ash(X, s, mixcompdist = &quot;normal&quot;, method = &quot;fdr&quot;)
-ashr.d &lt;- sum(ashr::get_qvalue(fit.ashr) &lt;= q)
-
-leuk.d &lt;- c(
-  cashr.d,
-  locfdr.d,
-  BH.d,
-  qvalue.d,
-  ashr.d
-)</code></pre>
+legend(&quot;bottomright&quot;, lwd = 2, col = c(&quot;grey75&quot;, &quot;blue&quot;), c(expression(&quot;F&quot;[p]), expression(&#39;N(0,1)&#39;)), bty = &quot;n&quot;, cex = 1.75, x.intersp = 0.5)</code></pre>
 </div>
-<div id="mouse-heart-data" class="section level2">
-<h2>Mouse heart data</h2>
-<pre class="r"><code>## read in data
-mouse &lt;- read.table(&quot;../data/smemo.txt&quot;, header = T, row.name = 1)
-mouse = mouse[, -5]
-## filter out lowly expressed genes
-mouse = mouse[rowSums(mouse) &gt;= 5, ]</code></pre>
-<pre class="r"><code>## obtain summary statistics using Smyth&#39;s pipeline
-design = model.matrix(~substr(colnames(mouse), 1, 2))
-dgecounts = edgeR::calcNormFactors(edgeR::DGEList(counts = mouse, group = design[, 2]))
-v = limma::voom(dgecounts, design, plot = FALSE)
-lim = limma::lmFit(v)
-r.ebayes = limma::eBayes(lim)
-p = r.ebayes$p.value[, 2]
-t = r.ebayes$t[, 2]
-z = -sign(t) * qnorm(p/2)
-X = lim$coefficients[, 2]
-s = X / z</code></pre>
-<pre class="r"><code>## fitting `locfdr` and `cashr`
-fit.locfdr &lt;- locfdr::locfdr(z, plot = 0)
-fit.cashr &lt;- cashr::cash(X, s)</code></pre>
-<pre class="r"><code>## calculate fitted empirical null distribution from `locfdr`, scaled by fitted null proportion
-y.plot.locfdr = dnorm(x.plot, fit.locfdr$fp0[3, 1], fit.locfdr$fp0[3, 2]) * fit.locfdr$fp0[3, 3]
+<div id="average-of-cdf-with-gene-gene-correlation-kept" class="section level2">
+<h2>Average of CDF with gene-gene correlation kept</h2>
+<pre class="r"><code>## calculate empirical CDF for every set of 1e4 z-scores at specified positions
+## these positions are dense in the tails and loose in the center
+quantile.left &lt;- exp(seq(-21, -5, by = 0.01))
+quantile.center &lt;- seq(0.007, 0.993, by = 0.001)
+quantile.right &lt;- rev(quantile.left)
+emp.cdf.left &lt;- sapply(quantile.left, function(x) {sapply(z.keep.cor, function(y) mean(y &lt;= qnorm(x)))})
+emp.cdf.center &lt;- sapply(quantile.center, function(x) {sapply(z.keep.cor, function(y) mean(y &lt;= qnorm(x)))})
+emp.cdf.right &lt;- sapply(quantile.right, function(x) {sapply(z.keep.cor, function(y) mean(y &lt;= -qnorm(x)))})
+emp.cdf.right.exceed &lt;- sapply(quantile.right, function(x) {sapply(z.keep.cor, function(y) mean(y &gt; -qnorm(x)))})</code></pre>
+<pre class="r"><code>ecdf.avg.left &lt;- colMeans(emp.cdf.left)
+ecdf.avg.center &lt;- colMeans(emp.cdf.center)
+ecdf.avg.right &lt;- colMeans(emp.cdf.right)
+ecdf.avg.right.exceed &lt;- colMeans(emp.cdf.right.exceed)
+ecdf.avg.whole &lt;- c(ecdf.avg.left, ecdf.avg.center, ecdf.avg.right)
+ecdf.avg.conf.int.left &lt;- apply(emp.cdf.left, 2, function(x) {t.test(x, conf.level = 0.999)$conf.int})
+ecdf.avg.conf.int.right.exceed &lt;- apply(emp.cdf.right.exceed, 2, function(x) {t.test(x, conf.level = 0.999)$conf.int})</code></pre>
+<pre class="r"><code>pdf(&quot;../figures/ecdf_keep_cor_avg.pdf&quot;, height = 5, width = 5)
 
-## calculate fitted correlated noise distribution from `cashr`, scaled by fitted null proportion
-y.plot.cashr = x.plot.st.gd.mat %*% fit.cashr$omega * fit.cashr$fitted_g$pi[1]</code></pre>
-<pre class="r"><code># setEPS()
-# postscript(&quot;../figures/mouse_hist.eps&quot;, height = 5, width = 6)
-pdf(&quot;../figures/mouse_hist.pdf&quot;, height = 5, width = 6)
+par(mar = c(4.5, 4.5, 2.5, 1))
 
-hist(z, prob = TRUE, main = expression(&quot;Mouse data&quot;), xlab = expression(paste(z, &quot;-score&quot;)), cex.lab = 1.25, xlim = c(-10, 10), ylim = y.lim, cex.main = 1.5)
+plot(c(qnorm(quantile.left), qnorm(quantile.center), -qnorm(quantile.right)), ecdf.avg.whole, type = &quot;l&quot;, xlab = &quot;z-score&quot;, ylab = &quot;CDF&quot;, cex.lab = 2, lwd = 2, main = expression(&#39;(a): Average Emp. CDF&#39;), cex.main = 2)
 
-lines(x.plot, dnorm(x.plot), col = &quot;orange&quot;, lty = 1, lwd = 2.5)
-lines(x.plot, y.plot.cashr, col = method.col[5], lwd = 2.5)
-lines(x.plot, y.plot.locfdr, col = method.col[3], lty = 1, lwd = 2.5)
+lines(c(qnorm(quantile.left), qnorm(quantile.center), -qnorm(quantile.right)),
+      c(quantile.left, quantile.center, pnorm(-qnorm(quantile.right))), lty = 2, col = &quot;blue&quot;, lwd = 2)
 
-text(-3.5, 0.188, &quot;N(0,1)&quot;, col = &quot;orange&quot;)
-arrows(-2.2, 0.188, -1.3, 0.183, length = 0.1, angle = 20, col = &quot;orange&quot;)
+legend(&quot;bottomright&quot;, lty = c(1, 2), col = c(1, &quot;blue&quot;), legend = c(expression(bar(&quot;F&quot;[p])), expression(&#39;N(0,1)&#39;)), lwd = 2, cex = 1.75, bty = &#39;n&#39;, x.intersp = 0.5)
 
-text(-6.8, 0.11, bquote(atop(&quot; locfdr empirical null&quot;, .(round(fit.locfdr$fp0[3, 3], 2)) %*% N(.(round(fit.locfdr$fp0[3, 1], 2)), .(round(fit.locfdr$fp0[3, 2], 2))^2))), col = method.col[3])
-arrows(-3.3, 0.1115, -2.4, 0.1065, length = 0.1, angle = 20, col = method.col[3])
+rect(xleft = c(range(qnorm(quantile.left))[1], range(-qnorm(quantile.right))[1]),
+     xright = c(range(qnorm(quantile.left))[2], range(-qnorm(quantile.right))[2]),
+     ybottom = c(range(quantile.left, ecdf.avg.left)[1], range(pnorm(-qnorm(quantile.right)), ecdf.avg.right)[1]),
+     ytop = c(range(quantile.left, ecdf.avg.left)[2], range(pnorm(-qnorm(quantile.right)), ecdf.avg.right)[2]),
+     border = &quot;red&quot;, lty = c(1, 5)
+     )</code></pre>
+<pre class="r"><code>pdf(&quot;../figures/ecdf_keep_cor_avg_left.pdf&quot;, height = 5, width = 5)
 
-text(5.1, 0.090,
-     bquote(atop(&quot;                    cashr corr noise dist&quot;, .(round(fit.cashr$fitted_g$pi[1], 2)) %*% hat(f))),
-     col = method.col[5])
-arrows(3.5, 0.0975, 2.6, 0.0925, length = 0.1, angle = 20, col = method.col[5])</code></pre>
+par(mar = c(4.5, 4.5, 2.5, 1))
+
+plot(qnorm(quantile.left), log(ecdf.avg.left), type = &quot;l&quot;,
+     ylim = range(log(quantile.left), log(ecdf.avg.left)),
+     xlab = &quot;z-score&quot;, ylab = &quot;log(CDF)&quot;, bty = &quot;n&quot;, lwd = 2, cex.lab = 2,
+     main = expression(&#39;(b): Left Tail&#39;), cex.main = 2)
+
+lines(qnorm(quantile.left), log(quantile.left), lty = 2, col = &quot;blue&quot;, lwd = 2)
+lines(qnorm(quantile.left), log(pnorm(qnorm(quantile.left), 0, 1.1)), lty = 3, col = &quot;orange&quot;, lwd = 2)
+lines(qnorm(quantile.left), log(pnorm(qnorm(quantile.left), 0, 1.05)), lty = 4, col = &quot;green&quot;, lwd = 2)
+
+polygon(x = c(qnorm(quantile.left), rev(qnorm(quantile.left))),
+        y = c(pmax(log(pmax(ecdf.avg.conf.int.left, 0)[1, ]), -30), rev(log(pmax(ecdf.avg.conf.int.left, 0)[2, ]))),
+        border = NA,
+        col = grDevices::adjustcolor(&quot;grey75&quot;, alpha.f = 0.5))
+
+legend(&quot;bottomright&quot;, lty = c(1, 2, 4, 3), col = c(&quot;black&quot;, &quot;blue&quot;, &quot;green&quot;, &quot;orange&quot;), legend = c(
+  expression(bar(&quot;F&quot;[p])),
+  expression(N(0, 1)),
+  expression(N(0, 1.05^2)),
+  expression(N(0, 1.1^2))
+), bty = &#39;n&#39;, lwd = 2, cex = 1.75, x.intersp = 0.5)
+
+box(col = &quot;red&quot;)</code></pre>
+<pre class="r"><code>pdf(&quot;../figures/ecdf_keep_cor_avg_right.pdf&quot;, height = 5, width = 5)
+
+par(mar = c(4.5, 4.5, 2.5, 1))
+
+plot(-qnorm(quantile.right), log(ecdf.avg.right.exceed), type = &quot;l&quot;,
+     ylim = range(log(quantile.right), log(ecdf.avg.right.exceed)),
+     xlab = &quot;z-score&quot;, ylab = &quot;log(1-CDF)&quot;, bty = &quot;n&quot;, lwd = 2, cex.lab = 2,
+     main = expression(&#39;(c): Right Tail&#39;), cex.main = 2)
+
+lines(-qnorm(quantile.right), log(quantile.right), lty = 2, col = &quot;blue&quot;, lwd = 2)
+lines(-qnorm(quantile.right), log(pnorm(qnorm(quantile.right), 0, 1.1)), lty = 3, lwd = 2, col = &quot;orange&quot;)
+lines(-qnorm(quantile.right), log(pnorm(qnorm(quantile.right), 0, 1.05)), lty = 4, lwd = 2, col = &quot;green&quot;)
+
+polygon(x = c(-qnorm(quantile.right), rev(-qnorm(quantile.right))),
+        y = c(pmax(log(pmax(ecdf.avg.conf.int.right.exceed[1, ], 0)), -30), rev(log(ecdf.avg.conf.int.right.exceed[2, ]))),
+        border = NA,
+        col = grDevices::adjustcolor(&quot;grey75&quot;, alpha.f = 0.5))
+
+legend(&quot;bottomleft&quot;, lty = c(1, 2, 4, 3), col = c(&quot;black&quot;, &quot;blue&quot;, &quot;green&quot;, &quot;orange&quot;), legend = c(
+  expression(bar(&quot;F&quot;[p])),
+  expression(N(0, 1)),
+  expression(N(0, 1.05^2)),
+  expression(N(0, 1.1^2))
+), bty = &#39;n&#39;, lwd = 2, cex = 1.75, x.intersp = 0.5)
+
+box(col = &quot;red&quot;, lty = 5)</code></pre>
 </div>
-<div id="numbers-of-discoveries-at-nominal-fdr-0.1" class="section level2">
-<h2>Numbers of discoveries at nominal FDR = 0.1</h2>
-<pre class="r"><code>## number of discoveries at nominal FDR = 0.1
-cashr.d &lt;- sum(fit.cashr$qvalue &lt;= q)
-
-locfdr.d &lt;- sum(ashr::qval.from.lfdr(fit.locfdr$fdr) &lt;= q)
-
-fit.BH &lt;- p.adjust(p, method = &quot;BH&quot;)
-BH.d &lt;- sum(fit.BH &lt;= q)
-
-fit.qvalue &lt;- qvalue::qvalue(p)
-qvalue.d &lt;- sum(fit.qvalue$qvalues &lt;= q)
-
-fit.ashr &lt;- ashr::ash(X, s, mixcompdist = &quot;normal&quot;, method = &quot;fdr&quot;)
-ashr.d &lt;- sum(ashr::get_qvalue(fit.ashr) &lt;= q)
-
-mouse.d &lt;- c(
-  cashr.d,
-  locfdr.d,
-  BH.d,
-  qvalue.d,
-  ashr.d
-)</code></pre>
-<pre class="r"><code>table.d &lt;- cbind.data.frame(
-  Method = c(
-    &#39;cashr&#39;,
-    &#39;locfdr&#39;,
-    &#39;BH&#39;,
-    &#39;qvalue&#39;,
-    &#39;ashr&#39;
-  ),
-  Leukemia = leuk.d,
-  Mouse = mouse.d
-)
-
-knitr::kable(table.d)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">Method</th>
-<th align="right">Leukemia</th>
-<th align="right">Mouse</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">cashr</td>
-<td align="right">385</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">locfdr</td>
-<td align="right">282</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">BH</td>
-<td align="right">1579</td>
-<td align="right">4130</td>
-</tr>
-<tr class="even">
-<td align="left">qvalue</td>
-<td align="right">1972</td>
-<td align="right">6502</td>
-</tr>
-<tr class="odd">
-<td align="left">ashr</td>
-<td align="right">3346</td>
-<td align="right">17191</td>
-</tr>
-</tbody>
-</table>
+<div id="disclaimer" class="section level2">
+<h2>Disclaimer</h2>
+<p>The RNA-seq data set used in this file for realistic simulations was created from the real human liver tissue RNA-seq gene expression read counts. In particular, the sample and gene identifiers have been removed from the data.</p>
+<p>The RNA-seq gene expression data were originally generated by the GTEx Project, which was supported by the Common Fund of the Office of the Director of the National Institutes of Health, and by NCI, NHGRI, NHLBI, NIDA, NIMH, and NINDS. The data used for the analyses described in this paper were obtained from the GTEx Portal at .</p>
 </div>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>
@@ -696,27 +693,13 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 loaded via a namespace (and not attached):
- [1] Rcpp_0.12.16      highr_0.6         bindr_0.1.1      
- [4] pillar_1.2.2      compiler_3.4.3    git2r_0.23.0     
- [7] plyr_1.8.4        workflowr_1.1.1   R.methodsS3_1.7.1
-[10] R.utils_2.6.0     iterators_1.0.9   tools_3.4.3      
-[13] digest_0.6.15     tibble_1.4.2      gtable_0.2.0     
-[16] evaluate_0.10.1   lattice_0.20-35   pkgconfig_2.0.1  
-[19] rlang_0.3.0.1     Matrix_1.2-14     foreach_1.4.4    
-[22] yaml_2.1.19       parallel_3.4.3    bindrcpp_0.2.2   
-[25] dplyr_0.7.4       stringr_1.3.1     knitr_1.20       
-[28] REBayes_1.3       locfit_1.5-9.1    rprojroot_1.3-2  
-[31] grid_3.4.3        glue_1.2.0        qvalue_2.10.0    
-[34] R6_2.2.2          PolynomF_1.0-2    rmarkdown_1.9    
-[37] limma_3.34.9      edgeR_3.20.9      reshape2_1.4.3   
-[40] ggplot2_3.1.0     cashr_0.2.0       locfdr_1.1-8     
-[43] ashr_2.2-7        magrittr_1.5      whisker_0.3-2    
-[46] backports_1.1.2   scales_0.5.0      codetools_0.2-15 
-[49] htmltools_0.3.6   splines_3.4.3     MASS_7.3-50      
-[52] assertthat_0.2.0  colorspace_1.3-2  stringi_1.2.2    
-[55] Rmosek_8.0.69     lazyeval_0.2.1    munsell_0.4.3    
-[58] doParallel_1.0.11 pscl_1.5.2        truncnorm_1.0-8  
-[61] SQUAREM_2017.10-1 R.oo_1.22.0      </code></pre>
+ [1] workflowr_1.1.1   Rcpp_0.12.16      digest_0.6.15    
+ [4] rprojroot_1.3-2   R.methodsS3_1.7.1 backports_1.1.2  
+ [7] git2r_0.23.0      magrittr_1.5      evaluate_0.10.1  
+[10] stringi_1.2.2     whisker_0.3-2     R.oo_1.22.0      
+[13] R.utils_2.6.0     rmarkdown_1.9     tools_3.4.3      
+[16] stringr_1.3.1     yaml_2.1.19       compiler_3.4.3   
+[19] htmltools_0.3.6   knitr_1.20       </code></pre>
 </div>
 
 <!-- Adjust MathJax settings so that all math formulae are shown using

@@ -283,7 +283,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">cashr_paper</a>
+      <a class="navbar-brand" href="index.html">cashr paper</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -332,7 +332,7 @@ div.section {
 </div>
 
 
-<p><strong>Last updated:</strong> 2018-12-12</p>
+<p><strong>Last updated:</strong> 2018-12-14</p>
 <strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
 <ul>
 <li>
@@ -349,8 +349,8 @@ div.section {
 </li>
 <li>
 <details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Seed:</strong> <code>set.seed(20181204)</code> </summary></p>
-<p>The command <code>set.seed(20181204)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Seed:</strong> <code>set.seed(777)</code> </summary></p>
+<p>The command <code>set.seed(777)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
 </details>
 </li>
 <li>
@@ -361,20 +361,19 @@ div.section {
 </li>
 <li>
 <details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/0f1f3b20a3351427e7a4545d47ffed5839a89c49" target="_blank">0f1f3b2</a> </summary></p>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/97c0343dc757af97ba63c896287403304b73159d" target="_blank">97c0343</a> </summary></p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 <pre><code>
 Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/FDP_sim_cache/
     Ignored:    analysis/cashr_paper_fig_deconv_cache/
+    Ignored:    analysis/cashr_paper_fig_ecdf_cache/
 
 Untracked files:
-    Untracked:  LICENSE
-    Untracked:  data/s.exp.rds
-    Untracked:  data/smemo.txt
-    Untracked:  figures/
+    Untracked:  analysis/FDP_sim.rmd
 
 </code></pre>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
@@ -410,6 +409,57 @@ Message
 rmd
 </td>
 <td style="text-align:left;">
+<a href="https://github.com/LSun/cashr_paper/blob/97c0343dc757af97ba63c896287403304b73159d/analysis/cashr_paper_fig_deconv.rmd" target="_blank">97c0343</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-14
+</td>
+<td style="text-align:left;">
+wflow_publish(all = TRUE)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/LSun/cashr_paper/blob/63cd00ace4d251f8b7b031d2a0e2eab029a82cf1/analysis/cashr_paper_fig_deconv.rmd" target="_blank">63cd00a</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-14
+</td>
+<td style="text-align:left;">
+figures
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+html
+</td>
+<td style="text-align:left;">
+<a href="https://cdn.rawgit.com/LSun/cashr_paper/54a80d7bc0dcd9be62f64cd7b37fb93ac414e3d9/docs/cashr_paper_fig_deconv.html" target="_blank">54a80d7</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-12
+</td>
+<td style="text-align:left;">
+Build site.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rmd
+</td>
+<td style="text-align:left;">
 <a href="https://github.com/LSun/cashr_paper/blob/8d76fc87fe44f19e550398307edc3a1fd5dc2ede/analysis/cashr_paper_fig_deconv.rmd" target="_blank">8d76fc8</a>
 </td>
 <td style="text-align:left;">
@@ -427,13 +477,11 @@ figures
 </ul>
 </details>
 <hr />
-<div id="deconv" class="section level2">
-<h2>Deconv</h2>
 <pre class="r"><code>## load in package
 library(ggplot2)</code></pre>
 <pre class="r"><code>## read in data
-z.sel &lt;- readRDS(&quot;data/z.sel.rds&quot;)
-s &lt;- readRDS(&#39;data/s.exp.rds&#39;)</code></pre>
+z.sel &lt;- readRDS(&quot;../data/z.sel.rds&quot;)
+s &lt;- readRDS(&#39;../data/s.exp.rds&#39;)</code></pre>
 <pre class="r"><code>## define true effect size prior g
 G &lt;- function (t) {
   0.6 * pnorm(t, 0, 0) + 0.3 * pnorm(t, 0, 1) + 0.1 * pnorm(t, 0, 3)
@@ -466,13 +514,7 @@ G.plot &lt;- G(x.plot)</code></pre>
 }</code></pre>
 <pre class="r"><code>## deconvolution
 
-noise.label &lt;- c(
-  &#39;a&#39;,
-  &#39;b&#39;,
-  &#39;c&#39;,
-  &#39;d&#39;,
-  &#39;e&#39;
-)
+noise.label &lt;- paste0(&quot;(&quot;, letters[1 : 5], &quot;)&quot;)
 
 deconv.list &lt;- list()
 
@@ -552,15 +594,6 @@ for (i in 1 : 5) {
   )
 }</code></pre>
 <pre class="r"><code>deconv.ggdata &lt;- do.call(rbind.data.frame, deconv.list)
-noise.level &lt;- c(&quot;(a)&quot;,
-                  &quot;(b)&quot;,
-                  &quot;(c)&quot;,
-                  &quot;(d)&quot;,
-                  &quot;(e)&quot;)
-deconv.ggdata$noise &lt;- plyr::mapvalues(deconv.ggdata$noise,
-                                        from = noise.label,
-                                        to = noise.level
-                                        )
 deconv.ggdata$noise &lt;- factor(deconv.ggdata$noise,
                               levels = levels(deconv.ggdata$noise)[c(1, 2, 5, 3, 4)]
                               )</code></pre>
@@ -584,9 +617,7 @@ deconv.plot &lt;- ggplot(data = deconv.ggdata, aes(x = x, y = cdfhat, col = meth
         legend.title = element_blank(),
         legend.text = element_text(size = 15))
 
-ggsave(&quot;figures/deconv.pdf&quot;, height = 6, width = 10)</code></pre>
-<pre><code>Warning: Removed 140 rows containing missing values (geom_path).</code></pre>
-</div>
+ggsave(&quot;../figures/deconv.pdf&quot;, height = 6, width = 10)</code></pre>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>
 <pre class="r"><code>sessionInfo()</code></pre>
@@ -605,20 +636,29 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] ggplot2_2.2.1
+[1] ggplot2_3.1.0
 
 loaded via a namespace (and not attached):
- [1] Rcpp_0.12.16      knitr_1.20        whisker_0.3-2    
- [4] magrittr_1.5      workflowr_1.1.1   munsell_0.4.3    
- [7] colorspace_1.3-2  rlang_0.2.0       stringr_1.3.1    
-[10] plyr_1.8.4        tools_3.4.3       grid_3.4.3       
-[13] gtable_0.2.0      R.oo_1.22.0       git2r_0.23.0     
-[16] htmltools_0.3.6   yaml_2.1.19       lazyeval_0.2.1   
-[19] rprojroot_1.3-2   digest_0.6.15     tibble_1.4.2     
-[22] R.utils_2.6.0     evaluate_0.10.1   rmarkdown_1.9    
-[25] labeling_0.3      stringi_1.2.2     pillar_1.2.2     
-[28] compiler_3.4.3    scales_0.5.0      backports_1.1.2  
-[31] R.methodsS3_1.7.1</code></pre>
+ [1] wavethresh_4.6.8    ashr_2.2-7          splines_3.4.3      
+ [4] lattice_0.20-35     Rmosek_8.0.69       colorspace_1.3-2   
+ [7] htmltools_0.3.6     yaml_2.1.19         rmutil_1.1.1       
+[10] rlang_0.3.0.1       R.oo_1.22.0         pillar_1.2.2       
+[13] glue_1.2.0          withr_2.1.2         R.utils_2.6.0      
+[16] REBayes_1.3         bindrcpp_0.2.2      foreach_1.4.4      
+[19] bindr_0.1.1         plyr_1.8.4          stringr_1.3.1      
+[22] munsell_0.4.3       gtable_0.2.0        workflowr_1.1.1    
+[25] R.methodsS3_1.7.1   codetools_0.2-15    evaluate_0.10.1    
+[28] labeling_0.3        knitr_1.20          doParallel_1.0.11  
+[31] pscl_1.5.2          parallel_3.4.3      Rcpp_0.12.16       
+[34] scales_0.5.0        backports_1.1.2     PolynomF_1.0-2     
+[37] truncnorm_1.0-8     deconvolveR_1.0-3   digest_0.6.15      
+[40] stringi_1.2.2       dplyr_0.7.4         cashr_0.2.0        
+[43] grid_3.4.3          rprojroot_1.3-2     tools_3.4.3        
+[46] magrittr_1.5        lazyeval_0.2.1      tibble_1.4.2       
+[49] EbayesThresh_1.4-12 whisker_0.3-2       pkgconfig_2.0.1    
+[52] MASS_7.3-50         Matrix_1.2-14       SQUAREM_2017.10-1  
+[55] assertthat_0.2.0    rmarkdown_1.9       iterators_1.0.9    
+[58] R6_2.2.2            git2r_0.23.0        compiler_3.4.3     </code></pre>
 </div>
 
 <!-- Adjust MathJax settings so that all math formulae are shown using

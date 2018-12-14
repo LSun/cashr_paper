@@ -283,7 +283,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">cashr_paper</a>
+      <a class="navbar-brand" href="index.html">cashr paper</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -332,7 +332,7 @@ div.section {
 </div>
 
 
-<p><strong>Last updated:</strong> 2018-12-12</p>
+<p><strong>Last updated:</strong> 2018-12-14</p>
 <strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
 <ul>
 <li>
@@ -349,8 +349,8 @@ div.section {
 </li>
 <li>
 <details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Seed:</strong> <code>set.seed(20181204)</code> </summary></p>
-<p>The command <code>set.seed(20181204)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Seed:</strong> <code>set.seed(777)</code> </summary></p>
+<p>The command <code>set.seed(777)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
 </details>
 </li>
 <li>
@@ -361,20 +361,19 @@ div.section {
 </li>
 <li>
 <details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/edca65168d1b969cbaaf04b90915ba3ddd0e86e0" target="_blank">edca651</a> </summary></p>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/97c0343dc757af97ba63c896287403304b73159d" target="_blank">97c0343</a> </summary></p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 <pre><code>
 Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/FDP_sim_cache/
     Ignored:    analysis/cashr_paper_fig_deconv_cache/
+    Ignored:    analysis/cashr_paper_fig_ecdf_cache/
 
 Untracked files:
-    Untracked:  LICENSE
-    Untracked:  data/s.exp.rds
-    Untracked:  data/smemo.txt
-    Untracked:  figures/
+    Untracked:  analysis/FDP_sim.rmd
 
 </code></pre>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
@@ -405,6 +404,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="text-align:left;">
+rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/LSun/cashr_paper/blob/97c0343dc757af97ba63c896287403304b73159d/analysis/cashr_paper_fig_shoulder.rmd" target="_blank">97c0343</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-14
+</td>
+<td style="text-align:left;">
+wflow_publish(all = TRUE)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/LSun/cashr_paper/blob/63cd00ace4d251f8b7b031d2a0e2eab029a82cf1/analysis/cashr_paper_fig_shoulder.rmd" target="_blank">63cd00a</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-14
+</td>
+<td style="text-align:left;">
+figures
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+html
+</td>
+<td style="text-align:left;">
+<a href="https://cdn.rawgit.com/LSun/cashr_paper/0f1f3b20a3351427e7a4545d47ffed5839a89c49/docs/cashr_paper_fig_shoulder.html" target="_blank">0f1f3b2</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-12
+</td>
+<td style="text-align:left;">
+Build site.
+</td>
+</tr>
 <tr>
 <td style="text-align:left;">
 html
@@ -462,13 +512,13 @@ figures
 </details>
 <hr />
 <pre class="r"><code>## read in data
-z &lt;- readRDS(&quot;data/z.sel.rds&quot;)[3, ]
+z &lt;- readRDS(&quot;../data/z.sel.rds&quot;)[3, ]
 p &lt;- pnorm(-abs(z)) * 2</code></pre>
 <pre class="r"><code>## histogram of correlated null z-scores
 
 # setEPS()
-# postscript(&quot;figures/hist_cor_z.eps&quot;, width = 6.5, height = 5)
-pdf(&quot;figures/hist_cor_z.pdf&quot;, width = 6.5, height = 5)
+# postscript(&quot;../figures/hist_cor_z.eps&quot;, width = 6.5, height = 5)
+pdf(&quot;../figures/hist_cor_z.pdf&quot;, width = 6.5, height = 5)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -477,16 +527,12 @@ hist(z, breaks = seq(-10, 10, by = 0.1), prob = TRUE, ylim = c(0, dnorm(0)), xla
 x.plot = seq(- max(abs(z)) - 2, max(abs(z)) + 2, length = 1000)
 lines(x.plot, dnorm(x.plot), col = &quot;blue&quot;, lwd = 3)
 
-legend(&quot;topright&quot;, expression(&#39;N(0,1)&#39;), lty = 1, col = &#39;blue&#39;, lwd = 3, cex = 1.75, bty = &#39;n&#39;, seg.len = 1.5, x.intersp = 0.5)
-
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
+legend(&quot;topright&quot;, expression(&#39;N(0,1)&#39;), lty = 1, col = &#39;blue&#39;, lwd = 3, cex = 1.75, bty = &#39;n&#39;, seg.len = 1.5, x.intersp = 0.5)</code></pre>
 <pre class="r"><code>## histogram of correlated null p-values
 
 # setEPS()
-# postscript(&quot;figures/hist_cor_pval.eps&quot;, width = 6.5, height = 5)
-pdf(&quot;figures/hist_cor_pval.pdf&quot;, width = 6.5, height = 5)
+# postscript(&quot;../figures/hist_cor_pval.eps&quot;, width = 6.5, height = 5)
+pdf(&quot;../figures/hist_cor_pval.pdf&quot;, width = 6.5, height = 5)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -494,16 +540,12 @@ hist(p, prob = TRUE, breaks = seq(0, 1, by = 0.01), xlab = &quot;p-value&quot;, 
 
 segments(x0 = 0, x1 = 1, y0 = 1, y1 = 1, col = &quot;blue&quot;, lwd = 3)
 
-legend(&quot;topright&quot;, expression(&#39;Uniform[0,1]&#39;), lty = 1, col = &#39;blue&#39;, lwd = 3, cex = 1.75, bty = &#39;n&#39;, seg.len = 1.5, x.intersp = 0.5)
-
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
+legend(&quot;topright&quot;, expression(&#39;Uniform[0,1]&#39;), lty = 1, col = &#39;blue&#39;, lwd = 3, cex = 1.75, bty = &#39;n&#39;, seg.len = 1.5, x.intersp = 0.5)</code></pre>
 <pre class="r"><code>## empirical CDF of correlated z-scores
 
 # setEPS()
-# postscript(&quot;figures/ecdf_cor_z.eps&quot;, width = 5, height = 5)
-pdf(&quot;figures/ecdf_cor_z.pdf&quot;, width = 5, height = 5)
+# postscript(&quot;../figures/ecdf_cor_z.eps&quot;, width = 5, height = 5)
+pdf(&quot;../figures/ecdf_cor_z.pdf&quot;, width = 5, height = 5)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -514,16 +556,12 @@ rect(xleft = c(-5, 2.5),
      xright = c(-2.5, 5),
      ytop = c(0.05, 1),
      ybottom = c(0, 0.95), border = &quot;red&quot;, lty = c(1, 5))
-legend(&quot;topleft&quot;, c(&quot;Correlated z-scores&quot;, expression(N(0,1)), expression(N(0, 1.6^2))), lty = c(1, 2, 4), col = c(&quot;black&quot;, &quot;blue&quot;, &quot;green&quot;), lwd = 3, cex = 1.25, bty = &#39;n&#39;, seg.len = 1.5, x.intersp = 0.5)
-
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
+legend(&quot;topleft&quot;, c(&quot;Correlated z-scores&quot;, expression(N(0,1)), expression(N(0, 1.6^2))), lty = c(1, 2, 4), col = c(&quot;black&quot;, &quot;blue&quot;, &quot;green&quot;), lwd = 3, cex = 1.25, bty = &#39;n&#39;, seg.len = 1.5, x.intersp = 0.5)</code></pre>
 <pre class="r"><code>## empirical CDF of correlated z-scores: left tail
 
 # setEPS()
-# postscript(&quot;figures/ecdf_cor_z_left.eps&quot;, width = 5, height = 5)
-pdf(&quot;figures/ecdf_cor_z_left.pdf&quot;, width = 5, height = 5)
+# postscript(&quot;../figures/ecdf_cor_z_left.eps&quot;, width = 5, height = 5)
+pdf(&quot;../figures/ecdf_cor_z_left.pdf&quot;, width = 5, height = 5)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -532,16 +570,12 @@ box(col = &quot;red&quot;)
 lines(seq(-6, 6, by = 0.01), pnorm(seq(-6, 6, by = 0.01)), col = &quot;blue&quot;, lwd = 3, lty = 2)
 lines(seq(-6, 6, by = 0.01), pnorm(seq(-6, 6, by = 0.01), 0, 1.6), col = &quot;green&quot;, lwd = 3, lty = 4)
 
-legend(&quot;topleft&quot;, c(&quot;Correlated z-scores&quot;, expression(N(0,1)), expression(N(0, 1.6^2))), lty = c(1, 2, 4), col = c(&quot;black&quot;, &quot;blue&quot;, &quot;green&quot;), lwd = 3, cex = 1.25, bty = &#39;n&#39;, seg.len = 1.5, x.intersp = 0.5)
-
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
+legend(&quot;topleft&quot;, c(&quot;Correlated z-scores&quot;, expression(N(0,1)), expression(N(0, 1.6^2))), lty = c(1, 2, 4), col = c(&quot;black&quot;, &quot;blue&quot;, &quot;green&quot;), lwd = 3, cex = 1.25, bty = &#39;n&#39;, seg.len = 1.5, x.intersp = 0.5)</code></pre>
 <pre class="r"><code>## empirical CDF of correlated z-scores: right tail
 
 # setEPS()
-# postscript(&quot;figures/ecdf_cor_z_right.eps&quot;, width = 5, height = 5)
-pdf(&quot;figures/ecdf_cor_z_right.pdf&quot;, width = 5, height = 5)
+# postscript(&quot;../figures/ecdf_cor_z_right.eps&quot;, width = 5, height = 5)
+pdf(&quot;../figures/ecdf_cor_z_right.pdf&quot;, width = 5, height = 5)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -550,11 +584,7 @@ box(col = &quot;red&quot;, lty = 5)
 lines(seq(-6, 6, by = 0.01), pnorm(seq(-6, 6, by = 0.01)), col = &quot;blue&quot;, lwd = 3, lty = 2)
 lines(seq(-6, 6, by = 0.01), pnorm(seq(-6, 6, by = 0.01), 0, 1.6), col = &quot;green&quot;, lwd = 3, lty = 4)
 
-legend(&quot;bottomright&quot;, c(&quot;Correlated z-scores&quot;, expression(N(0,1)), expression(N(0, 1.6^2))), lty = c(1, 2, 4), col = c(&quot;black&quot;, &quot;blue&quot;, &quot;green&quot;), lwd = 3, cex = 1.25, bty = &#39;n&#39;, seg.len = 1.5, x.intersp = 0.5)
-
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
+legend(&quot;bottomright&quot;, c(&quot;Correlated z-scores&quot;, expression(N(0,1)), expression(N(0, 1.6^2))), lty = c(1, 2, 4), col = c(&quot;black&quot;, &quot;blue&quot;, &quot;green&quot;), lwd = 3, cex = 1.25, bty = &#39;n&#39;, seg.len = 1.5, x.intersp = 0.5)</code></pre>
 <pre class="r"><code>thresh.color &lt;- c(&quot;maroon&quot;, &quot;purple&quot;, &quot;orange&quot;)
 
 ## generate iid samples from N(0,1) and N(0,1.6^2)
@@ -567,26 +597,25 @@ y.max &lt;- 20</code></pre>
 <pre class="r"><code>## log(p-values) of correlated null z-scores
 
 # setEPS()
-# postscript(&quot;figures/logpval_cor_null.eps&quot;, width = 5, height = 5)
-pdf(&quot;figures/logpval_cor_null.pdf&quot;, width = 5, height = 5)
+# postscript(&quot;../figures/logpval_cor_null.eps&quot;, width = 5, height = 5)
+# pdf(&quot;../figures/logpval_cor_null.pdf&quot;, width = 5, height = 5)
+png(&quot;../figures/logpval_cor_null.png&quot;, width = 5, height = 5, units = &quot;in&quot;, res = 1000)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
+set.seed(777)
 plot(sample(-log(p)), ylim = c(0, y.max), ylab = &quot;-log(p-value)&quot;, main = expression(&#39;(f): Correlated z-scores&#39;), cex.main = 2, cex.lab = 2, pch = 19)
 abline(h = -log(c(
   0.005,
   pnorm(-sqrt(2 * log(1e4))) * 2,
   0.05 / 1e4
-)), lwd = 3, col = thresh.color, lty = c(1, 2, 4))
-
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
+)), lwd = 3, col = thresh.color, lty = c(1, 2, 4))</code></pre>
 <pre class="r"><code>## log(p-values) of iid null z-scores
 
 # setEPS()
-# postscript(&quot;figures/logpval_iid_null.eps&quot;, width = 5, height = 5)
-pdf(&quot;figures/logpval_iid_null.pdf&quot;, width = 5, height = 5)
+# postscript(&quot;../figures/logpval_iid_null.eps&quot;, width = 5, height = 5)
+# pdf(&quot;../figures/logpval_iid_null.pdf&quot;, width = 5, height = 5)
+png(&quot;../figures/logpval_iid_null.png&quot;, width = 5, height = 5, units = &quot;in&quot;, res = 1000)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -603,16 +632,13 @@ legend(&quot;top&quot;,
          &#39;Univsal Threshold&#39;,
          latex2exp::TeX(&#39;p-value$= 0.005&#39;)
          ), lty = c(4, 2, 1), lwd = 3, xpd = NA,
-       col = thresh.color[3 : 1], ncol = 1, bty = &#39;n&#39;, cex = 1.25)
-
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
+       col = thresh.color[3 : 1], ncol = 1, bty = &#39;n&#39;, cex = 1.25)</code></pre>
 <pre class="r"><code>## log(p-values) of iid null z-scores
 
 # setEPS()
-# postscript(&quot;figures/logpval_iid_N016.eps&quot;, width = 5, height = 5)
-pdf(&quot;figures/logpval_iid_N016.pdf&quot;, width = 5, height = 5)
+# postscript(&quot;../figures/logpval_iid_N016.eps&quot;, width = 5, height = 5)
+# pdf(&quot;../figures/logpval_iid_N016.pdf&quot;, width = 5, height = 5)
+png(&quot;../figures/logpval_iid_N016.png&quot;, width = 5, height = 5, units = &quot;in&quot;, res = 1000)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -629,11 +655,7 @@ abline(h = -log(c(
 #          &#39;Univ Thresh&#39;,
 #          &quot;p = 0.005&quot;
 #          ), lty = c(4, 2, 1), lwd = 3, xpd = NA,
-#        col = thresh.color[3 : 1], ncol = 1, cex = 1.5, bty = &quot;n&quot;, x.intersp = 0.5, seg.len = 1.5)
-
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
+#        col = thresh.color[3 : 1], ncol = 1, cex = 1.5, bty = &quot;n&quot;, x.intersp = 0.5, seg.len = 1.5)</code></pre>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>
 <pre class="r"><code>sessionInfo()</code></pre>
