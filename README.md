@@ -34,9 +34,9 @@ biocLite(c("qvalue", "limma", "edgeR"), suppressUpdates = TRUE)
 install.packages(c("ashr", "locfdr", "deconvolveR", "EbayesThresh", "ggplot2", "latex2exp", "devtools"))
 ```
 3. Install the `Rmosek` package according to online instructions such as
-https://docs.mosek.com/8.1/rmosek/install-interface.html
-https://gist.github.com/mikelove/67ea44d5be5a053e599257fe357483dc
-https://rdrr.io/cran/ashr/f/inst/rmosek-mac.md
+- https://docs.mosek.com/8.1/rmosek/install-interface.html
+- https://gist.github.com/mikelove/67ea44d5be5a053e599257fe357483dc
+- https://rdrr.io/cran/ashr/f/inst/rmosek-mac.md
 Once `Rmosek` is intalled, install additional `R` packages by running the following commands in the `R` interactive environment.
 ``` r
 install.packages("REBayes")
