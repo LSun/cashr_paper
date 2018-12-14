@@ -4,7 +4,7 @@ author: "Lei Sun"
 date: "2018-12-11"
 output:
   workflowr::wflow_html:
-    code_folding: hide
+    code_folding: show
 ---
 
 ```{r global_options, include = FALSE}
@@ -55,7 +55,7 @@ for (i in 1 : 4) {
 
 # print the overall labels
 mtext('Density', side = 2, outer = TRUE, line = 1)
-mtext(latex2exp::TeX('Histograms of $10^4$ Correlated N(0,1) z-scores'), line = -2, outer = TRUE)
+mtext(expression(paste("Histograms of ", 10^4, " Correlated N(0,1) z-scores")), line = -2, outer = TRUE)
 
 legend("topleft", inset = c(-0.65, -0.25), legend = c("N(0, 1)", "Gaussian Derivatives"), lty = 1, lwd = 2, xpd = NA, col = c("blue", 'red'), ncol = 2)
 ```
