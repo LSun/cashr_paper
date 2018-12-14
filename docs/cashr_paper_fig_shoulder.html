@@ -361,7 +361,7 @@ div.section {
 </li>
 <li>
 <details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/7e2dddba2fbec3625299fe4147739adc0494ebae" target="_blank">7e2dddb</a> </summary></p>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/5529767a7e18b44702a5c71b1135031aab3f3fa1" target="_blank">5529767</a> </summary></p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 <pre><code>
 Ignored files:
@@ -404,6 +404,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="text-align:left;">
+rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/LSun/cashr_paper/blob/5529767a7e18b44702a5c71b1135031aab3f3fa1/analysis/cashr_paper_fig_shoulder.rmd" target="_blank">5529767</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-14
+</td>
+<td style="text-align:left;">
+wflow_publish(all = TRUE)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+html
+</td>
+<td style="text-align:left;">
+<a href="https://cdn.rawgit.com/LSun/cashr_paper/acfb13263717a570568b970f119c33b6692443ee/docs/cashr_paper_fig_shoulder.html" target="_blank">acfb132</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-14
+</td>
+<td style="text-align:left;">
+Build site.
+</td>
+</tr>
 <tr>
 <td style="text-align:left;">
 rmd
@@ -605,7 +639,7 @@ pdf(&quot;../figures/ecdf_cor_z_left.pdf&quot;, width = 5, height = 5)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
-plot(ecdf(z), xlab = &quot;z-score&quot;, ylab = &quot;CDF&quot;, main = expression(&quot;(d): Left Tail of CDF&quot;), lwd = 3, xlim = c(-5, -2.5), ylim = c(0, 0.05), cex.main = 2, cex.lab = 2, bty = &quot;n&quot;)
+plot(ecdf(z), xlab = &quot;z-score&quot;, ylab = &quot;CDF&quot;, main = expression(&quot;(d): Left Tail&quot;), lwd = 3, xlim = c(-5, -2.5), ylim = c(0, 0.05), cex.main = 2, cex.lab = 2, bty = &quot;n&quot;)
 box(col = &quot;red&quot;)
 lines(seq(-6, 6, by = 0.01), pnorm(seq(-6, 6, by = 0.01)), col = &quot;blue&quot;, lwd = 3, lty = 2)
 lines(seq(-6, 6, by = 0.01), pnorm(seq(-6, 6, by = 0.01), 0, 1.6), col = &quot;green&quot;, lwd = 3, lty = 4)
@@ -621,7 +655,7 @@ pdf(&quot;../figures/ecdf_cor_z_right.pdf&quot;, width = 5, height = 5)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
-plot(ecdf(z), xlab = &quot;z-score&quot;, ylab = &quot;CDF&quot;, main = expression(&quot;(e): Right Tail of CDF&quot;), lwd = 3, xlim = c(2.5, 5), ylim = c(0.95, 1), cex.main = 2, cex.lab = 2, bty = &quot;n&quot;)
+plot(ecdf(z), xlab = &quot;z-score&quot;, ylab = &quot;CDF&quot;, main = expression(&quot;(e): Right Tail&quot;), lwd = 3, xlim = c(2.5, 5), ylim = c(0.95, 1), cex.main = 2, cex.lab = 2, bty = &quot;n&quot;)
 box(col = &quot;red&quot;, lty = 5)
 lines(seq(-6, 6, by = 0.01), pnorm(seq(-6, 6, by = 0.01)), col = &quot;blue&quot;, lwd = 3, lty = 2)
 lines(seq(-6, 6, by = 0.01), pnorm(seq(-6, 6, by = 0.01), 0, 1.6), col = &quot;green&quot;, lwd = 3, lty = 4)
