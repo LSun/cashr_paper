@@ -7,13 +7,19 @@ output:
     code_folding: hide
 ---
 
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
 ```{r}
 ## load the data
 r <- readRDS("../data/liver.rds")
 ```
 
 ```{r}
-## load the script
+## load the script for the pipeline
+## to convert RNA-seq count data to summary statistics for each gene
+## in differential expression studies
 source("../code/RNAseq_pipeline.R")
 ```
 
@@ -24,16 +30,27 @@ nsamp <- 5
 nsim <- 1e4
 group <- rep(0 : 1, each = nsamp)
 
+## N(0,1) CDF plot positions
+x.plot <- seq(-6, 6, by = 0.01)
+y.plot.norm <- pnorm(x.plot)
+
+## DKW bounds for the empirical CDF of 1e4 iid N(0,1) samples
+## with alpha = 1e-4
+upper.norm <- y.plot.norm + sqrt(log(2 / (1 / nsim)) / (2 * ngene))
+lower.norm <- y.plot.norm - sqrt(log(2 / (1 / nsim)) / (2 * ngene))
+
 ## choose the 1e4 most expressed genes
 Y = lcpm(r)
 subset = top_genes_index(ngene, Y)
 r = r[subset,]
 ```
 
-```{r}
+## Keep gene-gene correlations
+
+```{r, cache = TRUE}
 ## simulate null z-scores from RNA-seq data
 ## KEEP correlation
-set.seed(777)
+set.seed(7)
 z.list <- list()
 for (i in seq(nsim)) {
   ## generate data
@@ -44,13 +61,46 @@ for (i in seq(nsim)) {
 ```
 
 ```{r}
+z.keep.cor <- z.list
 saveRDS(z.list, "../output/z_keep_cor.rds")
 ```
 
 ```{r}
+z.keep.cor <- readRDS('../output/z_keep_cor.rds')
+```
+
+```{r}
+nsim <- length(z.keep.cor)
+
+# setEPS()
+# postscript("../figures/ecdf_keep_cor.eps", width = 5, height = 5)
+png("../figures/ecdf_keep_cor.png", width = 5, height = 5, units = "in", res = 1000)
+
+par(mar = c(4.5, 4.5, 2.5, 1))
+
+plot(0, type = "n", xlim = c(-5, 5), ylim = c(0, 1), ylab = "(Empirical) CDF", xlab = "z-score", cex.lab = 2)
+title(expression('(a): Correlation Kept'), cex.main = 2)
+
+for (i in seq(nsim)) {
+  lines(ecdf(z.keep.cor[[i]]), lwd = 1, col = "grey75")
+}
+
+lines(x.plot, y.plot.norm, lwd = 2, col = "blue")
+
+lines(x.plot[upper.norm <= 1 & upper.norm >= 0], upper.norm[upper.norm <= 1 & upper.norm >= 0], lty = 3, col = "blue")
+lines(x.plot[lower.norm <= 1 & lower.norm >= 0], lower.norm[lower.norm <= 1 & lower.norm >= 0], lty = 3, col = "blue")
+
+legend("bottomright", lwd = 2, col = c("grey75", "blue"), c(expression("F"[p]), expression('N(0,1)')), bty = "n", cex = 1.75, x.intersp = 0.5)
+
+dev.off()
+```
+
+## Remove gene-gene correlations
+
+```{r, cache = TRUE}
 ## simulate null z-scores from RNA-seq data
 ## REMOVE correlation
-set.seed(777)
+set.seed(7)
 z.list <- list()
 for (i in seq(nsim)) {
   ## generate data
@@ -61,100 +111,171 @@ for (i in seq(nsim)) {
 ```
 
 ```{r}
+z.remove.cor <- z.list
 saveRDS(z.list, "../output/z_remove_cor.rds")
 ```
 
 ```{r}
-z.keep.cor <- readRDS('../output/z_keep_cor.rds')
 z.remove.cor <- readRDS('../output/z_remove_cor.rds')
 ```
 
-```{r gtex_rand_gene}
-nsim <- nrow(z.gtex.rand.gene)
-pz <- ncol(z.gtex.rand.gene)
+```{r}
+nsim <- length(z.remove.cor)
 
-png("../output/paper/ecdf_gtex_rand_gene.png", width = 5, height = 5, units = "in", res = 600)
+# setEPS()
+# postscript("../figures/ecdf_remove_cor.eps", width = 5, height = 5)
+png("../figures/ecdf_remove_cor.png", width = 5, height = 5, units = "in", res = 1000)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
-plot(0, type = "n", xlim = c(-5, 5), ylim = c(0, 1), ylab = "(Empirical) CDF", xlab = "z-scores", cex.lab = 2)
-title(expression('(b): correlation removed'), cex.main = 2)
+plot(0, type = "n", xlim = c(-5, 5), ylim = c(0, 1), ylab = "(Empirical) CDF", xlab = "z-score", cex.lab = 2)
+title(expression('(b): Correlation Removed'), cex.main = 2)
 
 for (i in seq(nsim)) {
-  lines(ecdf(z.gtex.rand.gene[i, ]), lwd = 1, col = "grey75")
+  lines(ecdf(z.remove.cor[[i]]), lwd = 1, col = "grey75")
 }
-
-x.plot <- seq(-6, 6, by = 0.01)
-y.plot.norm <- pnorm(x.plot)
-upper.norm <- y.plot.norm + sqrt(log(2 / (1 / nsim)) / (2 * pz))
-lower.norm <- y.plot.norm - sqrt(log(2 / (1 / nsim)) / (2 * pz))
 
 lines(x.plot, y.plot.norm, lwd = 2, col = "blue")
 
 lines(x.plot[upper.norm <= 1 & upper.norm >= 0], upper.norm[upper.norm <= 1 & upper.norm >= 0], lty = 3, col = "blue")
 lines(x.plot[lower.norm <= 1 & lower.norm >= 0], lower.norm[lower.norm <= 1 & lower.norm >= 0], lty = 3, col = "blue")
 
-legend("bottomright", lwd = 1 : 2, col = c("grey75", "blue"), c(expression("F"[p]), expression('N(0,1)')), bty = "n", cex = 2)
+legend("bottomright", lwd = 2, col = c("grey75", "blue"), c(expression("F"[p]), expression('N(0,1)')), bty = "n", cex = 1.75, x.intersp = 0.5)
 
 dev.off()
 ```
 
-```{r gtex}
-nsim <- length(z.gtex)
-pz <- length(z.gtex[[1]])
-
-png("../output/paper/ecdf_gtex.png", width = 5, height = 5, units = "in", res = 600)
-
-par(mar = c(4.5, 4.5, 2.5, 1))
-
-plot(0, type = "n", xlim = c(-5, 5), ylim = c(0, 1), ylab = "(Empirical) CDF", xlab = "z-scores", cex.lab = 2)
-title(expression('(a): correlation kept'), cex.main = 2)
-
-for (i in seq(nsim)) {
-  lines(ecdf(z.gtex[[i]]), lwd = 1, col = "grey75")
-}
-
-x.plot <- seq(-6, 6, by = 0.01)
-y.plot.norm <- pnorm(x.plot)
-upper.norm <- y.plot.norm + sqrt(log(2 / (1 / nsim)) / (2 * pz))
-lower.norm <- y.plot.norm - sqrt(log(2 / (1 / nsim)) / (2 * pz))
-
-lines(x.plot, y.plot.norm, lwd = 2, col = "blue")
-
-lines(x.plot[upper.norm <= 1 & upper.norm >= 0], upper.norm[upper.norm <= 1 & upper.norm >= 0], lty = 3, col = "blue")
-lines(x.plot[lower.norm <= 1 & lower.norm >= 0], lower.norm[lower.norm <= 1 & lower.norm >= 0], lty = 3, col = "blue")
-
-legend("bottomright", lwd = 1 : 2, col = c("grey75", "blue"), c(expression("F"[p]), expression('N(0,1)')), bty = "n", cex = 2)
-
-dev.off()
-```
+## Independent $N(0,1)$ $z$-scores
 
 ```{r iid}
-nsim <- nrow(z.gtex.rand.gene)
-pz <- ncol(z.gtex.rand.gene)
-
-png("../output/paper/ecdf_iid.png", width = 5, height = 5, units = "in", res = 600)
+# setEPS()
+# postscript("../figures/ecdf_iid.eps", width = 5, height = 5)
+png("../figures/ecdf_iid.png", width = 5, height = 5, units = "in", res = 1000)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
-plot(0, type = "n", xlim = c(-5, 5), ylim = c(0, 1), ylab = "(Empirical) CDF", xlab = "z-scores", cex.lab = 2)
-title(expression('(c): iid N(0,1) samples'), cex.main = 2)
+plot(0, type = "n", xlim = c(-5, 5), ylim = c(0, 1), ylab = "(Empirical) CDF", xlab = "z-score", cex.lab = 2)
+title(expression('(c): iid N(0,1) z-scores'), cex.main = 2)
 
-for (i in seq(1)) {
-  lines(ecdf(rnorm(pz)), lwd = 1, col = "grey75")
+set.seed(777)
+for (i in seq(nsim)) {
+  lines(ecdf(rnorm(ngene)), lwd = 1, col = "grey75")
 }
-
-x.plot <- seq(-6, 6, by = 0.01)
-y.plot.norm <- pnorm(x.plot)
-upper.norm <- y.plot.norm + sqrt(log(2 / (1 / nsim)) / (2 * pz))
-lower.norm <- y.plot.norm - sqrt(log(2 / (1 / nsim)) / (2 * pz))
 
 lines(x.plot, y.plot.norm, lwd = 2, col = "blue")
 
 lines(x.plot[upper.norm <= 1 & upper.norm >= 0], upper.norm[upper.norm <= 1 & upper.norm >= 0], lty = 3, col = "blue")
 lines(x.plot[lower.norm <= 1 & lower.norm >= 0], lower.norm[lower.norm <= 1 & lower.norm >= 0], lty = 3, col = "blue")
 
-legend("bottomright", lwd = 1 : 2, col = c("grey75", "blue"), c(expression("F"[p]), expression('N(0,1)')), bty = "n", cex = 2)
+legend("bottomright", lwd = 2, col = c("grey75", "blue"), c(expression("F"[p]), expression('N(0,1)')), bty = "n", cex = 1.75, x.intersp = 0.5)
+
+dev.off()
+```
+
+## Average of CDF with gene-gene correlation kept
+
+```{r, cache = TRUE}
+## calculate empirical CDF for every set of 1e4 z-scores at specified positions
+## these positions are dense in the tails and loose in the center
+quantile.left <- exp(seq(-21, -5, by = 0.01))
+quantile.center <- seq(0.007, 0.993, by = 0.001)
+quantile.right <- rev(quantile.left)
+emp.cdf.left <- sapply(quantile.left, function(x) {sapply(z.keep.cor, function(y) mean(y <= qnorm(x)))})
+emp.cdf.center <- sapply(quantile.center, function(x) {sapply(z.keep.cor, function(y) mean(y <= qnorm(x)))})
+emp.cdf.right <- sapply(quantile.right, function(x) {sapply(z.keep.cor, function(y) mean(y <= -qnorm(x)))})
+emp.cdf.right.exceed <- sapply(quantile.right, function(x) {sapply(z.keep.cor, function(y) mean(y > -qnorm(x)))})
+```
+
+```{r}
+ecdf.avg.left <- colMeans(emp.cdf.left)
+ecdf.avg.center <- colMeans(emp.cdf.center)
+ecdf.avg.right <- colMeans(emp.cdf.right)
+ecdf.avg.right.exceed <- colMeans(emp.cdf.right.exceed)
+ecdf.avg.whole <- c(ecdf.avg.left, ecdf.avg.center, ecdf.avg.right)
+ecdf.avg.conf.int.left <- apply(emp.cdf.left, 2, function(x) {t.test(x, conf.level = 0.999)$conf.int})
+ecdf.avg.conf.int.right.exceed <- apply(emp.cdf.right.exceed, 2, function(x) {t.test(x, conf.level = 0.999)$conf.int})
+```
+
+```{r}
+pdf("../figures/ecdf_keep_cor_avg.pdf", height = 5, width = 5)
+
+par(mar = c(4.5, 4.5, 2.5, 1))
+
+plot(c(qnorm(quantile.left), qnorm(quantile.center), -qnorm(quantile.right)), ecdf.avg.whole, type = "l", xlab = "z-score", ylab = "CDF", cex.lab = 2, lwd = 2, main = expression('(a): Average Emp. CDF'), cex.main = 2)
+
+lines(c(qnorm(quantile.left), qnorm(quantile.center), -qnorm(quantile.right)),
+      c(quantile.left, quantile.center, pnorm(-qnorm(quantile.right))), lty = 2, col = "blue", lwd = 2)
+
+legend("bottomright", lty = c(1, 2), col = c(1, "blue"), legend = c(expression(bar("F"[p])), expression('N(0,1)')), lwd = 2, cex = 1.75, bty = 'n', x.intersp = 0.5)
+
+rect(xleft = c(range(qnorm(quantile.left))[1], range(-qnorm(quantile.right))[1]),
+     xright = c(range(qnorm(quantile.left))[2], range(-qnorm(quantile.right))[2]),
+     ybottom = c(range(quantile.left, ecdf.avg.left)[1], range(pnorm(-qnorm(quantile.right)), ecdf.avg.right)[1]),
+     ytop = c(range(quantile.left, ecdf.avg.left)[2], range(pnorm(-qnorm(quantile.right)), ecdf.avg.right)[2]),
+     border = "red", lty = c(1, 5)
+     )
+
+dev.off()
+```
+
+```{r}
+pdf("../figures/ecdf_keep_cor_avg_left.pdf", height = 5, width = 5)
+
+par(mar = c(4.5, 4.5, 2.5, 1))
+
+plot(qnorm(quantile.left), log(ecdf.avg.left), type = "l",
+     ylim = range(log(quantile.left), log(ecdf.avg.left)),
+     xlab = "z-score", ylab = "log(CDF)", bty = "n", lwd = 2, cex.lab = 2,
+     main = expression('(b): Left Tail'), cex.main = 2)
+
+lines(qnorm(quantile.left), log(quantile.left), lty = 2, col = "blue", lwd = 2)
+lines(qnorm(quantile.left), log(pnorm(qnorm(quantile.left), 0, 1.1)), lty = 3, col = "orange", lwd = 2)
+lines(qnorm(quantile.left), log(pnorm(qnorm(quantile.left), 0, 1.05)), lty = 4, col = "green", lwd = 2)
+
+polygon(x = c(qnorm(quantile.left), rev(qnorm(quantile.left))),
+        y = c(pmax(log(pmax(ecdf.avg.conf.int.left, 0)[1, ]), -30), rev(log(pmax(ecdf.avg.conf.int.left, 0)[2, ]))),
+        border = NA,
+        col = grDevices::adjustcolor("grey75", alpha.f = 0.5))
+
+legend("bottomright", lty = c(1, 2, 4, 3), col = c("black", "blue", "green", "orange"), legend = c(
+  expression(bar("F"[p])),
+  expression(N(0, 1)),
+  expression(N(0, 1.05^2)),
+  expression(N(0, 1.1^2))
+), bty = 'n', lwd = 2, cex = 1.75, x.intersp = 0.5)
+
+box(col = "red")
+
+dev.off()
+```
+
+```{r}
+pdf("../figures/ecdf_keep_cor_avg_right.pdf", height = 5, width = 5)
+
+par(mar = c(4.5, 4.5, 2.5, 1))
+
+plot(-qnorm(quantile.right), log(ecdf.avg.right.exceed), type = "l",
+     ylim = range(log(quantile.right), log(ecdf.avg.right.exceed)),
+     xlab = "z-score", ylab = "log(1-CDF)", bty = "n", lwd = 2, cex.lab = 2,
+     main = expression('(c): Right Tail'), cex.main = 2)
+
+lines(-qnorm(quantile.right), log(quantile.right), lty = 2, col = "blue", lwd = 2)
+lines(-qnorm(quantile.right), log(pnorm(qnorm(quantile.right), 0, 1.1)), lty = 3, lwd = 2, col = "orange")
+lines(-qnorm(quantile.right), log(pnorm(qnorm(quantile.right), 0, 1.05)), lty = 4, lwd = 2, col = "green")
+
+polygon(x = c(-qnorm(quantile.right), rev(-qnorm(quantile.right))),
+        y = c(pmax(log(pmax(ecdf.avg.conf.int.right.exceed[1, ], 0)), -30), rev(log(ecdf.avg.conf.int.right.exceed[2, ]))),
+        border = NA,
+        col = grDevices::adjustcolor("grey75", alpha.f = 0.5))
+
+legend("bottomleft", lty = c(1, 2, 4, 3), col = c("black", "blue", "green", "orange"), legend = c(
+  expression(bar("F"[p])),
+  expression(N(0, 1)),
+  expression(N(0, 1.05^2)),
+  expression(N(0, 1.1^2))
+), bty = 'n', lwd = 2, cex = 1.75, x.intersp = 0.5)
+
+box(col = "red", lty = 5)
 
 dev.off()
 ```

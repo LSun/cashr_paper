@@ -16,8 +16,8 @@ library(ggplot2)
 
 ```{r}
 ## read in data
-z.sel <- readRDS("data/z.sel.rds")
-s <- readRDS('data/s.exp.rds')
+z.sel <- readRDS("../data/z.sel.rds")
+s <- readRDS('../data/s.exp.rds')
 ```
 
 ```{r}
@@ -186,5 +186,5 @@ deconv.plot <- ggplot(data = deconv.ggdata, aes(x = x, y = cdfhat, col = method,
         legend.title = element_blank(),
         legend.text = element_text(size = 15))
 
-ggsave("figures/deconv.pdf", height = 6, width = 10)
+ggsave("../figures/deconv.pdf", height = 6, width = 10)
 ```

@@ -60,8 +60,8 @@ y.plot.cashr = x.plot.st.gd.mat %*% fit.cashr$omega * fit.cashr$fitted_g$pi[1]
 
 ```{r}
 # setEPS()
-# postscript("figures/leukemia_hist.eps", height = 5, width = 6)
-pdf("figures/leukemia_hist.pdf", height = 5, width = 6)
+# postscript("../figures/leukemia_hist.eps", height = 5, width = 6)
+pdf("../figures/leukemia_hist.pdf", height = 5, width = 6)
 
 #####
 
@@ -113,7 +113,7 @@ leuk.d <- c(
 
 ```{r}
 ## read in data
-mouse <- read.table("data/smemo.txt", header = T, row.name = 1)
+mouse <- read.table("../data/smemo.txt", header = T, row.name = 1)
 mouse = mouse[, -5]
 ## filter out lowly expressed genes
 mouse = mouse[rowSums(mouse) >= 5, ]
@@ -149,8 +149,8 @@ y.plot.cashr = x.plot.st.gd.mat %*% fit.cashr$omega * fit.cashr$fitted_g$pi[1]
 
 ```{r}
 # setEPS()
-# postscript("figures/mouse_hist.eps", height = 5, width = 6)
-pdf("figures/mouse_hist.pdf", height = 5, width = 6)
+# postscript("../figures/mouse_hist.eps", height = 5, width = 6)
+pdf("../figures/mouse_hist.pdf", height = 5, width = 6)
 
 hist(z, prob = TRUE, main = expression("Mouse data"), xlab = expression(paste(z, "-score")), cex.lab = 1.25, xlim = c(-10, 10), ylim = y.lim, cex.main = 1.5)
 

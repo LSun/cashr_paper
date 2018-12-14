@@ -9,7 +9,7 @@ output:
 
 ```{r}
 ## read in data
-z <- readRDS("data/z.sel.rds")[3, ]
+z <- readRDS("../data/z.sel.rds")[3, ]
 p <- pnorm(-abs(z)) * 2
 ```
 
@@ -17,8 +17,8 @@ p <- pnorm(-abs(z)) * 2
 ## histogram of correlated null z-scores
 
 # setEPS()
-# postscript("figures/hist_cor_z.eps", width = 6.5, height = 5)
-pdf("figures/hist_cor_z.pdf", width = 6.5, height = 5)
+# postscript("../figures/hist_cor_z.eps", width = 6.5, height = 5)
+pdf("../figures/hist_cor_z.pdf", width = 6.5, height = 5)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -36,8 +36,8 @@ dev.off()
 ## histogram of correlated null p-values
 
 # setEPS()
-# postscript("figures/hist_cor_pval.eps", width = 6.5, height = 5)
-pdf("figures/hist_cor_pval.pdf", width = 6.5, height = 5)
+# postscript("../figures/hist_cor_pval.eps", width = 6.5, height = 5)
+pdf("../figures/hist_cor_pval.pdf", width = 6.5, height = 5)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -54,8 +54,8 @@ dev.off()
 ## empirical CDF of correlated z-scores
 
 # setEPS()
-# postscript("figures/ecdf_cor_z.eps", width = 5, height = 5)
-pdf("figures/ecdf_cor_z.pdf", width = 5, height = 5)
+# postscript("../figures/ecdf_cor_z.eps", width = 5, height = 5)
+pdf("../figures/ecdf_cor_z.pdf", width = 5, height = 5)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -75,8 +75,8 @@ dev.off()
 ## empirical CDF of correlated z-scores: left tail
 
 # setEPS()
-# postscript("figures/ecdf_cor_z_left.eps", width = 5, height = 5)
-pdf("figures/ecdf_cor_z_left.pdf", width = 5, height = 5)
+# postscript("../figures/ecdf_cor_z_left.eps", width = 5, height = 5)
+pdf("../figures/ecdf_cor_z_left.pdf", width = 5, height = 5)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -94,8 +94,8 @@ dev.off()
 ## empirical CDF of correlated z-scores: right tail
 
 # setEPS()
-# postscript("figures/ecdf_cor_z_right.eps", width = 5, height = 5)
-pdf("figures/ecdf_cor_z_right.pdf", width = 5, height = 5)
+# postscript("../figures/ecdf_cor_z_right.eps", width = 5, height = 5)
+pdf("../figures/ecdf_cor_z_right.pdf", width = 5, height = 5)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -126,8 +126,9 @@ y.max <- 20
 ## log(p-values) of correlated null z-scores
 
 # setEPS()
-# postscript("figures/logpval_cor_null.eps", width = 5, height = 5)
-pdf("figures/logpval_cor_null.pdf", width = 5, height = 5)
+# postscript("../figures/logpval_cor_null.eps", width = 5, height = 5)
+# pdf("../figures/logpval_cor_null.pdf", width = 5, height = 5)
+png("../figures/logpval_cor_null.png", width = 5, height = 5, units = "in", res = 1000)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -145,8 +146,9 @@ dev.off()
 ## log(p-values) of iid null z-scores
 
 # setEPS()
-# postscript("figures/logpval_iid_null.eps", width = 5, height = 5)
-pdf("figures/logpval_iid_null.pdf", width = 5, height = 5)
+# postscript("../figures/logpval_iid_null.eps", width = 5, height = 5)
+# pdf("../figures/logpval_iid_null.pdf", width = 5, height = 5)
+png("../figures/logpval_iid_null.png", width = 5, height = 5, units = "in", res = 1000)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -172,8 +174,9 @@ dev.off()
 ## log(p-values) of iid null z-scores
 
 # setEPS()
-# postscript("figures/logpval_iid_N016.eps", width = 5, height = 5)
-pdf("figures/logpval_iid_N016.pdf", width = 5, height = 5)
+# postscript("../figures/logpval_iid_N016.eps", width = 5, height = 5)
+# pdf("../figures/logpval_iid_N016.pdf", width = 5, height = 5)
+png("../figures/logpval_iid_N016.png", width = 5, height = 5, units = "in", res = 1000)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 

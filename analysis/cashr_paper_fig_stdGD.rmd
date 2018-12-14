@@ -17,8 +17,8 @@ method.col <- scales::hue_pal()(gd.ord)
 
 ```{r}
 # setEPS()
-# postscript("figures/stdGD.eps", height = 4.5, width = 15)
-pdf("figures/stdGD.pdf", height = 4.5, width = 15)
+# postscript("../figures/stdGD.eps", height = 4.5, width = 15)
+pdf("../figures/stdGD.pdf", height = 4.5, width = 15)
 
 par(mfrow = c(1, 2))
 par(mar = c(3, 6.5, 1, 1.5))
