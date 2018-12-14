@@ -25,13 +25,21 @@ To reproduce the results of Sun and Stephens (2018), you need to install the app
 
 ### Install software and R packages
 
-1.  Install [R](https://cran.r-project.org).
-3.  Install the required R packages by running the following commands in the R interactive environment. (Note the order of these commands is important---the Bioconductor packages should be installed before the CRAN packages.)
-
+1.  Install [`R`](https://cran.r-project.org).
+2.  Install [`RStudio`](https://www.rstudio.com/).
+2.  Install the required `R` packages by running the following commands in the `R` interactive environment. (Note the order of these commands is important---the Bioconductor packages should be installed before the CRAN packages.)
 ``` r
 source("https://bioconductor.org/biocLite.R")
 biocLite(c("qvalue", "limma", "edgeR"), suppressUpdates = TRUE)
-install.packages(c("ashr", "locfdr", "deconvolveR", "EbayesThresh", "ggplot2", "latex2exp"))
+install.packages(c("ashr", "locfdr", "deconvolveR", "EbayesThresh", "ggplot2", "latex2exp", "devtools"))
+```
+3. Install the `Rmosek` package according to online instructions such as
+https://docs.mosek.com/8.1/rmosek/install-interface.html
+https://gist.github.com/mikelove/67ea44d5be5a053e599257fe357483dc
+https://rdrr.io/cran/ashr/f/inst/rmosek-mac.md
+Once `Rmosek` is intalled, install additional `R` packages by running the following commands in the `R` interactive environment.
+``` r
+install.packages("REBayes")
 devtools::install_github("LSun/cashr")
 ```
 
