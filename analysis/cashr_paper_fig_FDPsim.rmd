@@ -1,5 +1,5 @@
 ---
-title: "Large-scale realistic simulations with `cashr`"
+title: "Large-scale realistic simulations with `cashr`: Multiple $g_1$ and $\pi_0$"
 author: "Lei Sun"
 date: "2018-12-13"
 output:
@@ -27,10 +27,10 @@ source("../code/RNAseq_pipeline.R")
 ## common simulation settings
 ngene <- 1e4
 nsamp <- 5
-nsim <- 1e3
 group <- rep(0 : 1, each = nsamp)
 pi0.vec <- c(0.5, 0.9, 0.99)
 q <- 0.1 # nominal FDR
+nsim <- 1e3
 
 ## choose the 1e4 most expressed genes
 Y = lcpm(r)
@@ -50,14 +50,14 @@ g1names <- c(
 
 sim.theta <- list(
   function (ngene, pi0) {
-    ## normal
+    ## Gaussian
     sample(c(
     rep(0, round(pi0 * ngene)),
     rnorm(round((1 - pi0) * ngene), 0, 2)
     ))
   },
   function (ngene, pi0) {
-    ## near normal
+    ## near Gaussian
     sample(c(
     rep(0, round(pi0 * ngene)),
     rnorm(round((1 - pi0) * 0.6 * ngene)),
@@ -200,9 +200,10 @@ sim.FDP <- readRDS("../output/sim.FDP.rds")
 sim.TDP <- readRDS("../output/sim.TDP.rds")
 ```
 
+## Distribution of FDP
+
 ```{r}
-ggdata.FDP <- reshape2::melt(sim.FDP, id.vars = c("g1", "pi0", "sdZ"), variable.name = "method", value.name = "FDP")
-ggdata.TDP <- reshape2::melt(sim.TDP, id.vars = c("g1", "pi0", "sdZ"), variable.name = "method", value.name = "TDP")
+FDP.ggdata <- reshape2::melt(sim.FDP, id.vars = c("g1", "pi0", "sdZ"), variable.name = "method", value.name = "FDP")
 ```
 
 ```{r}
@@ -231,7 +232,7 @@ method.col <- scales::hue_pal()(length(method.names))[c(5, 1, 2, 4, 3)]
 ```
 
 ```{r}
-FDP.q.g.plot <- ggplot(data = ggdata.FDP, aes(x = method, y = FDP, fill = method, color = method)) +
+FDP.plot <- ggplot(data = FDP.ggdata, aes(x = method, y = FDP, fill = method, color = method)) +
   stat_summary(fun.data = boxplot.quantile.sq, geom = "boxplot", position = "dodge", aes(width = 0.75), show.legend = FALSE) +
   stat_summary(fun.y = mean.sq, geom = "point", position = position_dodge(width = 0.9), show.legend = FALSE, shape = 13, size = 3) +
   scale_color_manual(labels = method.names, values = method.col) +
@@ -242,15 +243,166 @@ FDP.q.g.plot <- ggplot(data = ggdata.FDP, aes(x = method, y = FDP, fill = method
   coord_flip() +
   geom_hline(yintercept = q, col = "black", linetype = "dashed", size = 1) +
   labs(y = "FDP") +
-  theme(plot.title = element_text(size = 12, hjust = 0),
-        axis.title.y = element_blank(),
+  theme(axis.title.y = element_blank(),
         axis.text.y = element_text(size = 15),
         axis.title.x = element_text(size = 15),
-        axis.text.x = element_text(size = 10),
+        axis.text.x = element_text(size = 12),
         strip.text = element_text(size = 15),
         legend.position = "bottom",
         legend.background = element_rect(color = "grey"),
         legend.text = element_text(size = 12))
+```
+
+## Density of $g_1$
+
+```{r g1}
+plotx <- seq(-6, 6, by = 0.01)
+
+g1.density <- cbind.data.frame(
+  plotx,
+  dnorm(plotx, 0, 2),
+  0.6 * dnorm(plotx) +
+    0.4 * dnorm(plotx, 0, 3),
+  0.4 * dnorm(plotx, 0, 0.5) +
+    0.2 * dnorm(plotx, 0, 2) +
+    0.4 * dnorm(plotx, 0, 3),
+  0.25 * dnorm(plotx, -2, 2) +
+    0.25 * dnorm(plotx, -1, 2) +
+    0.25 * dnorm(plotx, 0, 1) +
+    0.25 * dnorm(plotx, 1, 1),
+  0.5 * dnorm(plotx, -1.5, 1.5) +
+    0.5 * dnorm(plotx, 1.5, 1.5),
+  0.5 * dnorm(plotx, -1.5, 1) +
+    0.5 * dnorm(plotx, 1.5, 1)
+)
+
+colnames(g1.density)[-1] <- g1names
+
+g1.ggdata <- reshape2::melt(g1.density,
+                            id.vars = "plotx",
+                            variable.name = "g1",
+                            value.name = "ploty")
+```
+
+```{r}
+g1.plot <- ggplot(data = g1.ggdata, aes(x = plotx, y = ploty)) +
+  geom_line() +
+  facet_wrap(~ g1, nrow = 1) +
+  labs(x = expression(theta), y = expression(g[1](theta))) +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_text(size = 10),
+        axis.title.y = element_text(size = 15),
+        axis.text.y = element_text(size = 10),
+        strip.text = element_text(size = 15),
+        legend.position = "none",
+        legend.background = element_rect(color = "grey"),
+        legend.text = element_text(size = 12))
+```
+
+## Root MSE of FDP from nominal FDR
+
+```{r}
+sqrtMSE.ggdata <- aggregate(FDP ~ method + pi0 + g1, data = FDP.ggdata, FUN = function (x, q) {sqrt(mean((x - q)^2))}, q = q)
+
+names(sqrtMSE.ggdata)[names(sqrtMSE.ggdata) == "FDP"] = 'rootMSE'
+```
+
+```{r}
+sqrtMSE.plot <- ggplot(data = sqrtMSE.ggdata,
+                       aes(x = factor(pi0),
+                           y = rootMSE,
+                           group = method,
+                           col = method,
+                           linetype = method,
+                           shape = method)) +
+  geom_line(size = 1.25) +
+  geom_point(size = 3) + 
+  scale_color_manual(values = method.col) +
+  facet_wrap(~ g1, nrow = 1) +
+  expand_limits(y = 0) +
+  labs(y = 'Root MSE', x = expression(pi[0])) +
+  theme(
+    axis.title.y = element_text(size = 15),
+    axis.text.y = element_text(size = 12),
+    axis.title.x = element_text(size = 15),
+    axis.text.x = element_text(size = 12),
+    strip.text = element_text(size = 15),
+    legend.text = element_text(size = 15),
+    legend.title = element_blank()
+  )
+```
+
+## Distribution of TDP
+
+```{r}
+TDP.ggdata <- reshape2::melt(sim.TDP, id.vars = c("g1", "pi0", "sdZ"), variable.name = "method", value.name = "TDP")
+
+meanTDP.ggdata <- aggregate(TDP ~ method + pi0 + g1, data = TDP.ggdata, FUN = "mean")
+
+names(meanTDP.ggdata)[names(meanTDP.ggdata) == "TDP"] = 'meanTDP'
+```
+
+```{r}
+meanTDP.plot <- ggplot(data = meanTDP.ggdata,
+                       aes(x = factor(pi0),
+                           y = meanTDP,
+                           group = method,
+                           col = method,
+                           linetype = method,
+                           shape = method)) +
+  geom_line(size = 1.25) +
+  geom_point(size = 3) + 
+  scale_color_manual(values = method.col) +
+  facet_wrap(~ g1, nrow = 1) +
+  expand_limits(y = 0) +
+  labs(y = 'Mean TDP', x = expression(pi[0])) +
+  theme(
+    axis.title.y = element_text(size = 15),
+    axis.text.y = element_text(size = 12),
+    axis.title.x = element_text(size = 15),
+    axis.text.x = element_text(size = 12),
+    strip.text = element_text(size = 15),
+    legend.text = element_text(size = 15),
+    legend.title = element_blank()
+  )
+```
+
+## Put together
+
+```{r}
+FDP_rootMSE_meanTDP_g1_pi0.plot <- gridExtra::arrangeGrob(
+  g1.plot + 
+    labs(title = expression(paste('(a): Distribution ', g[1], ' of non-null effects'))) +
+    theme(plot.margin = grid::unit(c(20, 92, 20, 10), "points")) +
+    theme(plot.title = element_text(size = 15)),
+
+  FDP.plot +
+    labs(title = bquote(paste('(b): Distribution of FDP'))) +
+    theme(strip.text.x = element_blank(),
+          plot.title = element_text(size = 15),
+          plot.margin = grid::unit(c(5.5, 67.5, 5.5, 5.5), 'points')
+    ),
+  
+  sqrtMSE.plot +
+    labs(title = '(c): Root MSE of FDP from nominal FDR') +
+    theme(strip.text = element_blank(),
+          plot.title = element_text(size = 15),
+          plot.margin = grid::unit(c(5.5, 5.5, 5.5, 15), 'points')
+    ),
+
+  meanTDP.plot +
+    labs(title = '(d): Mean of TDP') +
+    theme(strip.text = element_blank(),
+          plot.title = element_text(size = 15),
+          plot.margin = grid::unit(c(5.5, 5.5, 5.5, 15), 'points')
+    ),
+
+  heights = c(1.7, 2, 1.5, 1.5),
+
+  top = grid::textGrob(bquote(paste("Nominal FDR = ", .(q))), gp = grid::gpar(fontsize = 17), hjust = 3.6)
+)
+
+ggsave("../figures/FDP_sqrtMSE_meanTDP_g1_pi0.pdf", FDP_rootMSE_meanTDP_g1_pi0.plot, height = 13.5, width = 15)
 ```
 
 ## Disclaimer
