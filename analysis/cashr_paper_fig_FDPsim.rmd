@@ -1,0 +1,205 @@
+---
+title: "Large-scale realistic simulations with `cashr`"
+author: "Lei Sun"
+date: "2018-12-13"
+output:
+  workflowr::wflow_html:
+    code_folding: show
+---
+
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+```{r}
+## load the data
+r <- readRDS("../data/liver.rds")
+```
+
+```{r}
+## load the script
+source("../code/RNAseq_pipeline.R")
+```
+
+```{r}
+## common simulation settings
+ngene <- 1e4
+nsamp <- 5
+nsim <- 1e3
+group <- rep(0 : 1, each = nsamp)
+pi0.vec <- c(0.5, 0.9, 0.99)
+q <- 0.1 # nominal FDR
+
+## choose the 1e4 most expressed genes
+Y = lcpm(r)
+subset = top_genes_index(ngene, Y)
+r = r[subset,]
+```
+
+```{r}
+g1names <- c(
+  "Gaussian",
+  "Near Gaussian",
+  "Spiky",
+  "Skew",
+  "Flat Top",
+  "Bimodal"
+)
+
+sim.theta <- list(
+  function (ngene, pi0) {
+    ## normal
+    sample(c(
+    rep(0, round(pi0 * ngene)),
+    rnorm(round((1 - pi0) * ngene), 0, 2)
+    ))
+  },
+  function (ngene, pi0) {
+    ## near normal
+    sample(c(
+    rep(0, round(pi0 * ngene)),
+    rnorm(round((1 - pi0) * 0.6 * ngene)),
+    rnorm(round((1 - pi0) * 0.4 * ngene), 0, 3)
+    ))
+  },
+  function (ngene, pi0) {
+    ## spiky
+    sample(c(
+    rep(0, round(pi0 * ngene)),
+    rnorm(round((1 - pi0) * 0.4 * ngene), 0, 0.5),
+    rnorm(round((1 - pi0) * 0.2 * ngene), 0, 2),
+    rnorm(round((1 - pi0) * 0.4 * ngene), 0, 3)
+    ))
+  },
+  function (ngene, pi0) {
+    ## skew
+    sample(c(
+    rep(0, round(pi0 * ngene)),
+    rnorm(round((1 - pi0) * 0.25 * ngene), -2, 2),
+    rnorm(round((1 - pi0) * 0.25 * ngene), -1, 2),
+    rnorm(round((1 - pi0) * 0.25 * ngene), 0, 1),
+    rnorm(round((1 - pi0) * 0.25 * ngene), 1, 1)
+    ))
+  },
+  function (ngene, pi0) {
+    ## flat top
+    sample(c(
+    rep(0, round(pi0 * ngene)),
+    rnorm(round((1 - pi0) * 0.5 * ngene), -1.5, 1.5),
+    rnorm(round((1 - pi0) * 0.5 * ngene), 1.5, 1.5)
+    ))
+  },
+  function (ngene, pi0) {
+    ## bimodal
+    sample(c(
+    rep(0, round(pi0 * ngene)),
+    rnorm(round((1 - pi0) * 0.5 * ngene), -1.5, 1),
+    rnorm(round((1 - pi0) * 0.5 * ngene), 1.5, 1)
+    ))
+  }
+)
+
+XDP <- function (theta, qvalue, q) {
+  disc <- (qvalue <= q)
+  num.disc <- sum(disc)
+  num.false.disc <- sum(theta[disc] == 0)
+  num.true.disc <- sum(theta[disc] != 0)
+  num.true <- sum(theta != 0)
+  FDP <- num.false.disc / max(1, num.disc, na.rm = TRUE)
+  TDP <- num.true.disc / num.true
+  return(list(FDP = FDP, TDP = TDP))
+}
+```
+
+```{r cache = TRUE}
+set.seed(777)
+
+sim.FDP <- sim.TDP <- c()
+
+for (i in seq(sim.theta)) {
+  for (j in seq(nsim)) {
+    ## simulate correlated null z-scores
+    counts <- r[, sample(ncol(r), 2 * nsamp)]
+    summary <- count_to_summary(counts, group)
+    Z <- summary$z
+    sd.Z <- sd(Z)
+    
+    ## simulate and normalize standard deviations
+    s <- summary$s
+    s <- s / sqrt(mean(s^2))
+    
+    ## simulate normal means theta
+    pi0 <- sample(pi0.vec, 1)
+    theta <- sim.theta[[i]](ngene, pi0)
+    
+    ## construct observations
+    X <- theta + s * Z
+    
+    ## test statistics
+    z <- X / s
+    p = pnorm(-abs(z)) * 2
+    
+    ## apply different methods
+    fit.BH <- p.adjust(p, method = "BH")
+    XDP.BH <- XDP(theta, fit.BH, q)
+
+    fit.qvalue <- qvalue::qvalue(p)
+    qvalue.qvalue <- fit.qvalue$qvalues
+    XDP.qvalue <- XDP(theta, qvalue.qvalue, q)
+    
+    fit.locfdr <- tryCatch(locfdr::locfdr(z, plot = 0), error = function(e) {NA})
+    qvalue.locfdr <- tryCatch(ashr::qval.from.lfdr(fit.locfdr$fdr), error = function(e) {rep(NA, ngene)})
+    XDP.locfdr <- XDP(theta, qvalue.locfdr, q)
+
+    fit.ashr <- ashr::ash(X, s, mixcompdist = "normal", method = "fdr")
+    qvalue.ashr <- ashr::get_qvalue(fit.ashr)
+    XDP.ashr <- XDP(theta, qvalue.ashr, q)
+    
+    fit.cashr <- cashr::cash(X, s)
+    qvalue.cashr <- fit.cashr$qvalue
+    XDP.cashr <- XDP(theta, qvalue.cashr, q)
+    
+    ## FDP aggregated
+    sim.FDP <- rbind.data.frame(sim.FDP, data.frame(
+      g1 = g1names[i],
+      pi0 = pi0,
+      sdZ = sd.Z,
+
+      cashr = XDP.cashr$FDP,
+      BH = XDP.BH$FDP,
+      qvalue = XDP.qvalue$FDP,
+      ashr = XDP.ashr$FDP,
+      locfdr = XDP.locfdr$FDP
+    ))
+    
+    ## TDP aggregated
+    sim.TDP <- rbind.data.frame(sim.TDP, data.frame(
+      g1 = g1names[i],
+      pi0 = pi0,
+      sdZ = sd.Z,
+
+      cashr = XDP.cashr$TDP,
+      BH = XDP.BH$TDP,
+      qvalue = XDP.qvalue$TDP,
+      ashr = XDP.ashr$TDP,
+      locfdr = XDP.locfdr$TDP
+    ))
+  }
+}
+```
+
+```{r}
+saveRDS(sim.FDP, '../output/sim.FDP.rds')
+saveRDS(sim.TDP, '../output/sim.TDP.rds')
+```
+
+```{r}
+sim.FDP <- readRDS("../output/sim.FDP.rds")
+sim.TDP <- readRDS("../output/sim.TDP.rds")
+```
+
+## Disclaimer
+
+The RNA-seq data set used in this file for realistic simulations was created from the real human liver tissue RNA-seq gene expression read counts. In particular, the sample and gene identifiers have been removed from the data.
+
+The RNA-seq gene expression data were originally generated by the GTEx Project, which was supported by the Common Fund of the Office of the Director of the National Institutes of Health, and by NCI, NHGRI, NHLBI, NIDA, NIMH, and NINDS. The data used for the analyses described in this paper were obtained from the GTEx Portal at [the GTEx Portal](https://www.gtexportal.org).
