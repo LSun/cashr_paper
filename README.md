@@ -1,6 +1,6 @@
 # Source to reproduce results from Sun and Stephens (2018)
 
-This repository contains data and code needed to reproduce all results and plots of Sun and Stephens (2018), which develops `cashr` methods to solve the Empirical Bayes Normal Means (EBNM) problem with correlated noise. The methods are implemented in the [`cashr`](https://github.com/LSun/cashr) package.
+This repository contains data and code needed to reproduce all results and plots of Sun and Stephens (2018), which develops `cashr` methods to solve the Empirical Bayes Normal Means (EBNM) problem with correlated noise. The methods are implemented in the [`cashr`](https://github.com/LSun/cashr) package. See https://lsun.github.io/cashr_paper/ for more details.
 
 Citing this work
 ----------------
