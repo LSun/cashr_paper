@@ -29,7 +29,7 @@ To reproduce the results of Sun and Stephens (2018), you need to install the app
 ``` r
 source("https://bioconductor.org/biocLite.R")
 biocLite(c("qvalue", "limma", "edgeR"), suppressUpdates = TRUE)
-install.packages(c("ashr", "locfdr", "deconvolveR", "EbayesThresh", "ggplot2", "latex2exp", "devtools"))
+install.packages(c("ashr", "locfdr", "deconvolveR", "EbayesThresh", "ggplot2", "reshape2", "scales", "latex2exp", "devtools"))
 ```
 4. Install the `R` package `Rmosek` following the online instructions such as
 - https://docs.mosek.com/8.1/rmosek/install-interface.html

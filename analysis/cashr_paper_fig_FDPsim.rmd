@@ -7,6 +7,8 @@ output:
     code_folding: show
 ---
 
+- This file will take ~30 hours to knit.
+
 ```{r global_options, include = FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```
@@ -196,6 +198,59 @@ saveRDS(sim.TDP, '../output/sim.TDP.rds')
 ```{r}
 sim.FDP <- readRDS("../output/sim.FDP.rds")
 sim.TDP <- readRDS("../output/sim.TDP.rds")
+```
+
+```{r}
+ggdata.FDP <- reshape2::melt(sim.FDP, id.vars = c("g1", "pi0", "sdZ"), variable.name = "method", value.name = "FDP")
+ggdata.TDP <- reshape2::melt(sim.TDP, id.vars = c("g1", "pi0", "sdZ"), variable.name = "method", value.name = "TDP")
+```
+
+```{r}
+library(ggplot2)
+
+boxplot.quantile.sq <- function (x) {
+  r <- sqrt(quantile(x^2, probs = c(0.05, 0.25, 0.5, 0.75, 0.95)))
+  names(r) <- c("ymin", "lower", "middle", "upper", "ymax")
+  return(r)
+}
+
+mean.sq <- function (x) {
+  r <- sqrt(mean(x^2))
+  return(r)
+}
+
+mysqrt_trans <- function() {
+  scales::trans_new("mysqrt", 
+                    transform = base::sqrt,
+                    inverse = function(x) ifelse(x<0, 0, x^2),
+                    domain = c(0, Inf))
+}
+
+method.names <- c("cashr", "BH", "qvalue", "ashr", "locfdr")
+method.col <- scales::hue_pal()(length(method.names))[c(5, 1, 2, 4, 3)]
+```
+
+```{r}
+FDP.q.g.plot <- ggplot(data = ggdata.FDP, aes(x = method, y = FDP, fill = method, color = method)) +
+  stat_summary(fun.data = boxplot.quantile.sq, geom = "boxplot", position = "dodge", aes(width = 0.75), show.legend = FALSE) +
+  stat_summary(fun.y = mean.sq, geom = "point", position = position_dodge(width = 0.9), show.legend = FALSE, shape = 13, size = 3) +
+  scale_color_manual(labels = method.names, values = method.col) +
+  scale_fill_manual(labels = method.names, values = alpha(method.col, 0.35)) +
+  scale_y_continuous(trans = "mysqrt", breaks = c(0, 0.1, 0.2, 0.4, 0.6, 0.8)) +
+  facet_grid(pi0 ~ g1, labeller = label_bquote(rows = pi[0] == .(pi0))) +
+  scale_x_discrete(limits = rev(levels(ggdata.FDP$method))) +
+  coord_flip() +
+  geom_hline(yintercept = q, col = "black", linetype = "dashed", size = 1) +
+  labs(y = "FDP") +
+  theme(plot.title = element_text(size = 12, hjust = 0),
+        axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 15),
+        axis.title.x = element_text(size = 15),
+        axis.text.x = element_text(size = 10),
+        strip.text = element_text(size = 15),
+        legend.position = "bottom",
+        legend.background = element_rect(color = "grey"),
+        legend.text = element_text(size = 12))
 ```
 
 ## Disclaimer
