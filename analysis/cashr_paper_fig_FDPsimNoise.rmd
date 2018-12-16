@@ -7,7 +7,7 @@ output:
     code_folding: show
 ---
 
-- This file will take ~xx hours to knit.
+- This file will take ~6 hours to knit.
 
 ```{r global_options, include = FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
@@ -43,6 +43,10 @@ nsim <- 1e3
 Y = lcpm(r)
 subset = top_genes_index(ngene, Y)
 r = r[subset,]
+
+## multiple testing methods
+method.name <- c("cashr", "BH", "qvalue", "ashr", "locfdr")
+method.col <- scales::hue_pal()(length(method.names))[c(5, 1, 2, 4, 3)]
 ```
 
 ```{r}
@@ -153,6 +157,117 @@ sim.FDP <- readRDS("../output/sim.FDP.gaus.pi0.rds")
 sim.TDP <- readRDS("../output/sim.TDP.gaus.pi0.rds")
 Z.list <- readRDS("../output/sim.FDP.gaus.pi0.Z.rds")
 disc.list <- readRDS("../output/sim.FDP.gaus.pi0.disc.rds")
+```
+
+```{r}
+library(ggplot2)
+
+boxplot.quantile <- function(x) {
+  r <- quantile(x, probs = c(0.05, 0.25, 0.5, 0.75, 0.95))
+  names(r) <- c("ymin", "lower", "middle", "upper", "ymax")
+  return(r)
+}
+
+boxplot.quantile.sq <- function (x) {
+  r <- sqrt(quantile(x^2, probs = c(0.05, 0.25, 0.5, 0.75, 0.95)))
+  names(r) <- c("ymin", "lower", "middle", "upper", "ymax")
+  return(r)
+}
+
+mean.sq <- function (x) {
+  r <- sqrt(mean(x^2))
+  return(r)
+}
+
+mysqrt_trans <- function() {
+  scales::trans_new("mysqrt", 
+                    transform = base::sqrt,
+                    inverse = function(x) ifelse(x<0, 0, x^2),
+                    domain = c(0, Inf))
+}
+```
+
+## Distribution of FDP by distortion
+
+```{r}
+distortion <- cut(sim.FDP$sdZ, breaks = c(0, quantile(sim.FDP$sdZ, probs = 1 : 2 / 3), Inf), labels = c("Pseudo-deflation", "In-between", "Pseudo-inflation"))
+
+sim.FDP.ext <- rbind.data.frame(
+  cbind.data.frame(
+    distortion,
+    sim.FDP[, -1]
+  ),
+  cbind.data.frame(
+    distortion = rep("All", length(distortion)),
+    sim.FDP[, -1]
+  )
+)
+
+FDP.ggdata <- reshape2::melt(sim.FDP.ext, id.vars = "distortion", variable.name = "method", value.name = "FDP")
+```
+
+```{r}
+FDP.plot <- ggplot(data = FDP.ggdata, aes(x = method, y = FDP, fill = method, color = method)) +
+  stat_summary(fun.data = boxplot.quantile.sq, geom = "boxplot", aes(width = 0.75), position = position_dodge(), show.legend = FALSE) +
+  stat_summary(fun.y = mean.sq, geom = "point", position = position_dodge(width = 0.9), show.legend = FALSE, shape = 13, size = 3) +
+  scale_x_discrete(limits = rev(levels(FDP.ggdata$method))) +
+  scale_y_continuous(trans = "mysqrt", breaks = c(0, 0.1, 0.2, 0.4, 0.6, 0.8)) +
+  coord_flip() +
+  scale_color_manual(labels = method.name, values = method.col) +
+  scale_fill_manual(labels = method.name, values = alpha(method.col, 0.35)) +
+  facet_wrap(~distortion, nrow = 1) +
+  geom_hline(yintercept = q, col = "black", linetype = "dashed", size = 1) +
+  labs(x = expression(pi[0]), y = "FDP") +
+  expand_limits(y = 0) +
+  theme(plot.title = element_text(size = 12, hjust = 0),
+        axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 15),
+        axis.title.x = element_text(size = 15),
+        axis.text.x = element_text(size = 10),
+        strip.text = element_text(size = 15),
+        legend.position = "bottom",
+        legend.background = element_rect(color = "grey"),
+        legend.text = element_text(size = 12)
+        )
+```
+
+## Distribution of TDP by distortion
+
+```{r}
+sim.TDP.ext <- rbind.data.frame(
+  cbind.data.frame(
+    distortion,
+    sim.TDP[, -1]
+  ),
+  cbind.data.frame(
+    distortion = rep("All", length(distortion)),
+    sim.TDP[, -1]
+  )
+)
+
+TDP.ggdata <- reshape2::melt(sim.TDP.ext, id.vars = "distortion", variable.name = "method", value.name = "TDP")
+```
+
+```{r}
+TDP.plot <- ggplot(data = TDP.ggdata, aes(x = method, y = TDP, fill = method, color = method)) +
+  stat_summary(fun.data = boxplot.quantile, geom = "boxplot", aes(width = 0.75), position = position_dodge(), show.legend = FALSE) +
+  coord_flip() +
+  stat_summary(fun.y = mean, geom = "point", position = position_dodge(width = 0.9), show.legend = FALSE, shape = 13, size = 3) +
+  scale_x_discrete(limits = rev(levels(TDP.ggdata$method))) +
+  scale_color_manual(labels = method.name, values = method.col) +
+  scale_fill_manual(labels = method.name, values = alpha(method.col, 0.35)) +
+  facet_wrap(~distortion, nrow = 1) +
+  labs(x = expression(pi[0]), y = "TDP") +
+  expand_limits(y = 0) +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 15),
+        axis.title.x = element_text(size = 15),
+        axis.text.x = element_text(size = 10),
+        strip.text = element_text(size = 15),
+        legend.position = "bottom",
+        legend.background = element_rect(color = "grey"),
+        legend.text = element_text(size = 12)
+        )
 ```
 
 ## Disclaimer
