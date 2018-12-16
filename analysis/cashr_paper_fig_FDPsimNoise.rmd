@@ -46,7 +46,7 @@ r = r[subset,]
 
 ## multiple testing methods
 method.name <- c("cashr", "BH", "qvalue", "ashr", "locfdr")
-method.col <- scales::hue_pal()(length(method.names))[c(5, 1, 2, 4, 3)]
+method.col <- scales::hue_pal()(length(method.name))[c(5, 1, 2, 4, 3)]
 ```
 
 ```{r}
@@ -219,11 +219,10 @@ FDP.plot <- ggplot(data = FDP.ggdata, aes(x = method, y = FDP, fill = method, co
   geom_hline(yintercept = q, col = "black", linetype = "dashed", size = 1) +
   labs(x = expression(pi[0]), y = "FDP") +
   expand_limits(y = 0) +
-  theme(plot.title = element_text(size = 12, hjust = 0),
-        axis.title.y = element_blank(),
+  theme(axis.title.y = element_blank(),
         axis.text.y = element_text(size = 15),
         axis.title.x = element_text(size = 15),
-        axis.text.x = element_text(size = 10),
+        axis.text.x = element_text(size = 12),
         strip.text = element_text(size = 15),
         legend.position = "bottom",
         legend.background = element_rect(color = "grey"),
@@ -262,13 +261,96 @@ TDP.plot <- ggplot(data = TDP.ggdata, aes(x = method, y = TDP, fill = method, co
   theme(axis.title.y = element_blank(),
         axis.text.y = element_text(size = 15),
         axis.title.x = element_text(size = 15),
-        axis.text.x = element_text(size = 10),
+        axis.text.x = element_text(size = 12),
         strip.text = element_text(size = 15),
         legend.position = "bottom",
         legend.background = element_rect(color = "grey"),
         legend.text = element_text(size = 12)
         )
 ```
+
+## Typical examples of correlated noise
+
+```{r}
+exmp <- order(sim.FDP$sdZ)[round(quantile(seq(sim.FDP$sdZ), c(1/6, 3/6, 5/6)))]
+
+Z.list.exmp <- Z.list[exmp]
+names(Z.list.exmp) <- levels(distortion)
+Z.exmp.ggdata <- reshape2::melt(Z.list.exmp, value.name = "Z")
+Z.exmp.ggdata$L1 <- factor(Z.exmp.ggdata$L1, levels = levels(distortion))
+
+Z.exmp.plot <- ggplot(data = Z.exmp.ggdata, aes(x = Z)) +
+  geom_histogram(aes(y = ..density..), binwidth = 0.2) +
+  facet_wrap(~factor(L1), nrow = 1) +
+  stat_function(fun = dnorm, aes(color = "N(0,1)"), lwd = 1.5, show.legend = TRUE) +
+  scale_color_manual(values = "blue") +
+  labs(y = 'Density') +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_text(size = 12),
+        axis.title.y = element_text(size = 15),
+        axis.text.y = element_text(size = 10),
+        strip.text = element_text(size = 15),
+        legend.title = element_blank(),
+        legend.position = "right",
+        legend.text = element_text(size = 12),
+        legend.key = element_blank()
+        )
+```
+
+## Put together
+
+```{r}
+FDP_TDP_Z.plot <- gridExtra::arrangeGrob(
+  Z.exmp.plot +
+    labs(title = '(a): Examples of realized correlated N(0,1) noise') +
+    theme(
+      plot.margin = grid::unit(c(10, 95.5, 10, 17.5), "points"),
+      plot.title = element_text(size = 15)
+    ),
+
+  FDP.plot +
+    labs(title = '(b): Distribution of FDP') +
+    theme(plot.title = element_text(size = 15),
+          plot.margin = grid::unit(c(5.5, 5.5, 5.5, 5.5), "points")
+    ),
+  
+  TDP.plot +
+    labs(title = '(c): Distribution of TDP') +
+    theme(plot.margin = grid::unit(c(5.5, 5.5, 5.5, 5.5), "points"),
+          plot.title = element_text(size = 15)
+    ),
+
+  heights = c(1.1, 1, 1),
+  top = grid::textGrob(label = bquote(paste(
+    'Nominal FDR = ', .(q), ' (', g[1], ' is Guassian; ', pi[0] == 0.9, ')')), gp = grid::gpar(fontsize = 15, fontface = 'bold'), hjust = 1.125)
+)
+
+ggsave("../figures/FDP_TDP_Z.pdf", FDP_TDP_Z.plot, height = 7, width = 10)
+```
+
+## Several examples
+
+### Pseudo-deflation
+
+```{r}
+options(digits = 2)
+do.call(cbind, disc.list[[order(sim.FDP$sdZ)[156]]])
+```
+
+### In-between
+
+```{r}
+options(digits = 2)
+do.call(cbind, disc.list[[order(sim.FDP$sdZ)[500]]])
+```
+
+### Pseudo-inflation
+
+```{r}
+options(digits = 2)
+do.call(cbind, disc.list[[order(sim.FDP$sdZ)[909]]])
+```
+
 
 ## Disclaimer
 
