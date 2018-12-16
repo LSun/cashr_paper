@@ -12,5 +12,6 @@ We provide resources to reproduce Sun and Stephens (2018). Simply click `Code` o
 * [Figure 2: Deconvolution by EBNM methods with correlated and independent noise](cashr_paper_fig_deconv.html)
 * [Figure 3: Should-but-not-tail property of correlation-induced inflation](cashr_paper_fig_shoulder.html)
 * [Figure 4: Standardized Gaussian derivatives](cashr_paper_fig_stdGD.html)
+* [Figure 6: Simulation results tratified by distortion patterns](cashr_paper_fig_FDPsimNoise.html)
 * [Figure 7 and Table 1: Analyzing leukemia and mouse data](cashr_paper_fig_leukmouse.html)
 * [Figure A.1 and A.2: Evidence to show the realistically simulated null $z$-scores are indeed margianlly $N(0,1)$](cashr_paper_fig_ecdf.html)
