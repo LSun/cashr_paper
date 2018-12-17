@@ -63,7 +63,7 @@ XDP <- function (theta, qvalue, q) {
 ```
 
 ```{r cache = TRUE}
-set.seed(777)
+set.seed(7)
 
 sim.FDP <- sim.TDP <- c()
 Z.list <- disc.list <- list()
@@ -146,17 +146,17 @@ for (i in seq(nsim)) {
 ```
 
 ```{r}
-saveRDS(sim.FDP, '../output/sim.FDP.gaus.pi0.rds')
-saveRDS(sim.TDP, '../output/sim.TDP.gaus.pi0.rds')
-saveRDS(Z.list, '../output/sim.FDP.gaus.pi0.Z.rds')
-saveRDS(disc.list, '../output/sim.FDP.gaus.pi0.disc.rds')
+saveRDS(sim.FDP, '../output/noise.FDP.rds')
+saveRDS(sim.TDP, '../output/noise.TDP.rds')
+saveRDS(Z.list, '../output/noise.Z.rds')
+saveRDS(disc.list, '../output/noise.discov.rds')
 ```
 
 ```{r}
-sim.FDP <- readRDS("../output/sim.FDP.gaus.pi0.rds")
-sim.TDP <- readRDS("../output/sim.TDP.gaus.pi0.rds")
-Z.list <- readRDS("../output/sim.FDP.gaus.pi0.Z.rds")
-disc.list <- readRDS("../output/sim.FDP.gaus.pi0.disc.rds")
+sim.FDP <- readRDS("../output/noise.FDP.rds")
+sim.TDP <- readRDS("../output/noise.TDP.rds")
+Z.list <- readRDS("../output/noise.Z.rds")
+disc.list <- readRDS("../output/noise.discov.rds")
 ```
 
 ```{r}
@@ -334,7 +334,7 @@ ggsave("../figures/FDP_TDP_Z.pdf", FDP_TDP_Z.plot, height = 7, width = 10)
 
 ```{r}
 options(digits = 2)
-do.call(cbind, disc.list[[order(sim.FDP$sdZ)[156]]])
+do.call(cbind, disc.list[[order(sim.FDP$sdZ)[150]]])
 ```
 
 ### In-between
@@ -348,7 +348,7 @@ do.call(cbind, disc.list[[order(sim.FDP$sdZ)[500]]])
 
 ```{r}
 options(digits = 2)
-do.call(cbind, disc.list[[order(sim.FDP$sdZ)[909]]])
+do.call(cbind, disc.list[[order(sim.FDP$sdZ)[900]]])
 ```
 
 
