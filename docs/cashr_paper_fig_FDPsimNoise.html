@@ -332,7 +332,7 @@ div.section {
 </div>
 
 
-<p><strong>Last updated:</strong> 2018-12-16</p>
+<p><strong>Last updated:</strong> 2018-12-17</p>
 <strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
 <ul>
 <li>
@@ -361,7 +361,7 @@ div.section {
 </li>
 <li>
 <details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/e16acfb814b0e2cc07f0f025b439f42e33dd8a17" target="_blank">e16acfb</a> </summary></p>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/f16b45ea5fd2c9a02fec1a2e789bce19cc08f616" target="_blank">f16b45e</a> </summary></p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 <pre><code>
 Ignored files:
@@ -406,6 +406,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="text-align:left;">
+rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/LSun/cashr_paper/blob/f16b45ea5fd2c9a02fec1a2e789bce19cc08f616/analysis/cashr_paper_fig_FDPsimNoise.rmd" target="_blank">f16b45e</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-17
+</td>
+<td style="text-align:left;">
+wflow_publish(c(“analysis/cashr_paper_fig_FDPsimNoise.rmd”,
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+html
+</td>
+<td style="text-align:left;">
+<a href="https://cdn.rawgit.com/LSun/cashr_paper/012a285e57083b0c43901b5882382cd324a2f913/docs/cashr_paper_fig_FDPsimNoise.html" target="_blank">012a285</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-16
+</td>
+<td style="text-align:left;">
+Build site.
+</td>
+</tr>
 <tr>
 <td style="text-align:left;">
 rmd
@@ -502,7 +536,7 @@ method.col &lt;- scales::hue_pal()(length(method.name))[c(5, 1, 2, 4, 3)]</code>
   TDP &lt;- num.true.disc / num.true
   return(list(D = num.disc, FD = num.false.disc, FDP = FDP, TD = num.true.disc, TDP = TDP))
 }</code></pre>
-<pre class="r"><code>set.seed(777)
+<pre class="r"><code>set.seed(7)
 
 sim.FDP &lt;- sim.TDP &lt;- c()
 Z.list &lt;- disc.list &lt;- list()
@@ -582,14 +616,14 @@ for (i in seq(nsim)) {
     locfdr = XDP.locfdr
   )
 }</code></pre>
-<pre class="r"><code>saveRDS(sim.FDP, &#39;../output/sim.FDP.gaus.pi0.rds&#39;)
-saveRDS(sim.TDP, &#39;../output/sim.TDP.gaus.pi0.rds&#39;)
-saveRDS(Z.list, &#39;../output/sim.FDP.gaus.pi0.Z.rds&#39;)
-saveRDS(disc.list, &#39;../output/sim.FDP.gaus.pi0.disc.rds&#39;)</code></pre>
-<pre class="r"><code>sim.FDP &lt;- readRDS(&quot;../output/sim.FDP.gaus.pi0.rds&quot;)
-sim.TDP &lt;- readRDS(&quot;../output/sim.TDP.gaus.pi0.rds&quot;)
-Z.list &lt;- readRDS(&quot;../output/sim.FDP.gaus.pi0.Z.rds&quot;)
-disc.list &lt;- readRDS(&quot;../output/sim.FDP.gaus.pi0.disc.rds&quot;)</code></pre>
+<pre class="r"><code>saveRDS(sim.FDP, &#39;../output/noise.FDP.rds&#39;)
+saveRDS(sim.TDP, &#39;../output/noise.TDP.rds&#39;)
+saveRDS(Z.list, &#39;../output/noise.Z.rds&#39;)
+saveRDS(disc.list, &#39;../output/noise.discov.rds&#39;)</code></pre>
+<pre class="r"><code>sim.FDP &lt;- readRDS(&quot;../output/noise.FDP.rds&quot;)
+sim.TDP &lt;- readRDS(&quot;../output/noise.TDP.rds&quot;)
+Z.list &lt;- readRDS(&quot;../output/noise.Z.rds&quot;)
+disc.list &lt;- readRDS(&quot;../output/noise.discov.rds&quot;)</code></pre>
 <pre class="r"><code>library(ggplot2)
 
 boxplot.quantile &lt;- function(x) {
@@ -747,35 +781,35 @@ ggsave(&quot;../figures/FDP_TDP_Z.pdf&quot;, FDP_TDP_Z.plot, height = 7, width =
 <div id="pseudo-deflation" class="section level3">
 <h3>Pseudo-deflation</h3>
 <pre class="r"><code>options(digits = 2)
-do.call(cbind, disc.list[[order(sim.FDP$sdZ)[156]]])</code></pre>
-<pre><code>    cashr BH   qvalue ashr   locfdr
-D   416   257  257    265    358   
-FD  38    0    0      1      40    
-FDP 0.091 0    0      0.0038 0.11  
-TD  378   257  257    264    318   
-TDP 0.38  0.26 0.26   0.26   0.32  </code></pre>
+do.call(cbind, disc.list[[order(sim.FDP$sdZ)[150]]])</code></pre>
+<pre><code>    cashr BH    qvalue ashr  locfdr
+D   373   306   306    302   510   
+FD  28    7     7      5     87    
+FDP 0.075 0.023 0.023  0.017 0.17  
+TD  345   299   299    297   423   
+TDP 0.34  0.3   0.3    0.3   0.42  </code></pre>
 </div>
 <div id="in-between" class="section level3">
 <h3>In-between</h3>
 <pre class="r"><code>options(digits = 2)
 do.call(cbind, disc.list[[order(sim.FDP$sdZ)[500]]])</code></pre>
-<pre><code>    cashr BH    qvalue ashr locfdr
-D   316   301   301    310  327   
-FD  32    23    23     28   33    
-FDP 0.1   0.076 0.076  0.09 0.1   
-TD  284   278   278    282  294   
-TDP 0.28  0.28  0.28   0.28 0.29  </code></pre>
+<pre><code>    cashr BH    qvalue ashr  locfdr
+D   418   324   329    344   322   
+FD  36    7     10     11    11    
+FDP 0.086 0.022 0.03   0.032 0.034 
+TD  382   317   319    333   311   
+TDP 0.38  0.32  0.32   0.33  0.31  </code></pre>
 </div>
 <div id="pseudo-inflation" class="section level3">
 <h3>Pseudo-inflation</h3>
 <pre class="r"><code>options(digits = 2)
-do.call(cbind, disc.list[[order(sim.FDP$sdZ)[909]]])</code></pre>
+do.call(cbind, disc.list[[order(sim.FDP$sdZ)[900]]])</code></pre>
 <pre><code>    cashr BH   qvalue ashr locfdr
-D   251   447  556    783  130   
-FD  21    138  211    389  4     
-FDP 0.084 0.31 0.38   0.5  0.031 
-TD  230   309  345    394  126   
-TDP 0.23  0.31 0.34   0.39 0.13  </code></pre>
+D   231   412  512    583  84    
+FD  7     77   143    184  0     
+FDP 0.03  0.19 0.28   0.32 0     
+TD  224   335  369    399  84    
+TDP 0.22  0.34 0.37   0.4  0.084 </code></pre>
 </div>
 </div>
 <div id="disclaimer" class="section level2">
