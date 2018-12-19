@@ -1,5 +1,5 @@
 ---
-title: "Large-scale realistic simulations with `cashr`: Multiple $g_1$ and $\pi_0$"
+title: "Large-scale realistic simulations with `cashr`: Multiple $g_1$ and $\\pi_0$"
 author: "Lei Sun"
 date: "2018-12-13"
 output:
@@ -30,12 +30,15 @@ nsamp <- 5
 group <- rep(0 : 1, each = nsamp)
 pi0.vec <- c(0.5, 0.9, 0.99)
 q <- 0.1 # nominal FDR
-nsim <- 1e3
 
 ## choose the 1e4 most expressed genes
 Y = lcpm(r)
 subset = top_genes_index(ngene, Y)
 r = r[subset,]
+
+## multiple testing methods
+method.names <- c("cashr", "BH", "qvalue", "ashr", "locfdr")
+method.col <- scales::hue_pal()(length(method.names))[c(5, 1, 2, 4, 3)]
 ```
 
 ```{r}
@@ -114,6 +117,8 @@ XDP <- function (theta, qvalue, q) {
 ```
 
 ```{r cache = TRUE}
+nsim <- 3e3
+
 set.seed(777)
 
 sim.FDP <- sim.TDP <- c()
@@ -200,12 +205,6 @@ sim.FDP <- readRDS("../output/sim.FDP.rds")
 sim.TDP <- readRDS("../output/sim.TDP.rds")
 ```
 
-## Distribution of FDP
-
-```{r}
-FDP.ggdata <- reshape2::melt(sim.FDP, id.vars = c("g1", "pi0", "sdZ"), variable.name = "method", value.name = "FDP")
-```
-
 ```{r}
 library(ggplot2)
 
@@ -226,9 +225,12 @@ mysqrt_trans <- function() {
                     inverse = function(x) ifelse(x<0, 0, x^2),
                     domain = c(0, Inf))
 }
+```
 
-method.names <- c("cashr", "BH", "qvalue", "ashr", "locfdr")
-method.col <- scales::hue_pal()(length(method.names))[c(5, 1, 2, 4, 3)]
+## Distribution of FDP
+
+```{r}
+FDP.ggdata <- reshape2::melt(sim.FDP, id.vars = c("g1", "pi0", "sdZ"), variable.name = "method", value.name = "FDP")
 ```
 
 ```{r}
@@ -239,7 +241,7 @@ FDP.plot <- ggplot(data = FDP.ggdata, aes(x = method, y = FDP, fill = method, co
   scale_fill_manual(labels = method.names, values = alpha(method.col, 0.35)) +
   scale_y_continuous(trans = "mysqrt", breaks = c(0, 0.1, 0.2, 0.4, 0.6, 0.8)) +
   facet_grid(pi0 ~ g1, labeller = label_bquote(rows = pi[0] == .(pi0))) +
-  scale_x_discrete(limits = rev(levels(ggdata.FDP$method))) +
+  scale_x_discrete(limits = rev(levels(FDP.ggdata$method))) +
   coord_flip() +
   geom_hline(yintercept = q, col = "black", linetype = "dashed", size = 1) +
   labs(y = "FDP") +
@@ -255,7 +257,7 @@ FDP.plot <- ggplot(data = FDP.ggdata, aes(x = method, y = FDP, fill = method, co
 
 ## Density of $g_1$
 
-```{r g1}
+```{r}
 plotx <- seq(-6, 6, by = 0.01)
 
 g1.density <- cbind.data.frame(

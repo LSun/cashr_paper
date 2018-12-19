@@ -74,7 +74,7 @@ nsim <- length(z.keep.cor)
 
 # setEPS()
 # postscript("../figures/ecdf_keep_cor.eps", width = 5, height = 5)
-png("../figures/ecdf_keep_cor.png", width = 5, height = 5, units = "in", res = 1000)
+png("../figures/ecdf_keep_cor.png", width = 5, height = 5, units = "in", res = 300)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -124,7 +124,7 @@ nsim <- length(z.remove.cor)
 
 # setEPS()
 # postscript("../figures/ecdf_remove_cor.eps", width = 5, height = 5)
-png("../figures/ecdf_remove_cor.png", width = 5, height = 5, units = "in", res = 1000)
+png("../figures/ecdf_remove_cor.png", width = 5, height = 5, units = "in", res = 300)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -150,7 +150,7 @@ invisible(dev.off())
 ```{r iid}
 # setEPS()
 # postscript("../figures/ecdf_iid.eps", width = 5, height = 5)
-png("../figures/ecdf_iid.png", width = 5, height = 5, units = "in", res = 1000)
+png("../figures/ecdf_iid.png", width = 5, height = 5, units = "in", res = 300)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
