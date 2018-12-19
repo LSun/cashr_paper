@@ -332,7 +332,7 @@ div.section {
 </div>
 
 
-<p><strong>Last updated:</strong> 2018-12-14</p>
+<p><strong>Last updated:</strong> 2018-12-19</p>
 <strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
 <ul>
 <li>
@@ -361,19 +361,18 @@ div.section {
 </li>
 <li>
 <details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/7e2dddba2fbec3625299fe4147739adc0494ebae" target="_blank">7e2dddb</a> </summary></p>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/86e9fcca6d8944d4c5a0296e5ba811daeff2447b" target="_blank">86e9fcc</a> </summary></p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 <pre><code>
 Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/FDP_sim_cache/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/cashr_paper_fig_FDPsimNoise_cache/
+    Ignored:    analysis/cashr_paper_fig_FDPsim_cache/
     Ignored:    analysis/cashr_paper_fig_deconv_cache/
     Ignored:    analysis/cashr_paper_fig_ecdf_cache/
-
-Untracked files:
-    Untracked:  analysis/FDP_sim.rmd
 
 </code></pre>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
@@ -404,6 +403,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="text-align:left;">
+rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/LSun/cashr_paper/blob/86e9fcca6d8944d4c5a0296e5ba811daeff2447b/analysis/cashr_paper_fig_ecdf.rmd" target="_blank">86e9fcc</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-19
+</td>
+<td style="text-align:left;">
+wflow_publish(c(“analysis/cashr_paper_fig_FDPsim.rmd”, “analysis/cashr_paper_fig_ecdf.rmd”,
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+html
+</td>
+<td style="text-align:left;">
+<a href="https://cdn.rawgit.com/LSun/cashr_paper/acfb13263717a570568b970f119c33b6692443ee/docs/cashr_paper_fig_ecdf.html" target="_blank">acfb132</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-14
+</td>
+<td style="text-align:left;">
+Build site.
+</td>
+</tr>
 <tr>
 <td style="text-align:left;">
 rmd
@@ -538,7 +571,7 @@ saveRDS(z.list, &quot;../output/z_keep_cor.rds&quot;)</code></pre>
 
 # setEPS()
 # postscript(&quot;../figures/ecdf_keep_cor.eps&quot;, width = 5, height = 5)
-png(&quot;../figures/ecdf_keep_cor.png&quot;, width = 5, height = 5, units = &quot;in&quot;, res = 1000)
+png(&quot;../figures/ecdf_keep_cor.png&quot;, width = 5, height = 5, units = &quot;in&quot;, res = 300)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -577,7 +610,7 @@ saveRDS(z.list, &quot;../output/z_remove_cor.rds&quot;)</code></pre>
 
 # setEPS()
 # postscript(&quot;../figures/ecdf_remove_cor.eps&quot;, width = 5, height = 5)
-png(&quot;../figures/ecdf_remove_cor.png&quot;, width = 5, height = 5, units = &quot;in&quot;, res = 1000)
+png(&quot;../figures/ecdf_remove_cor.png&quot;, width = 5, height = 5, units = &quot;in&quot;, res = 300)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 
@@ -601,7 +634,7 @@ invisible(dev.off())</code></pre>
 <h2>Independent <span class="math inline">\(N(0,1)\)</span> <span class="math inline">\(z\)</span>-scores</h2>
 <pre class="r"><code># setEPS()
 # postscript(&quot;../figures/ecdf_iid.eps&quot;, width = 5, height = 5)
-png(&quot;../figures/ecdf_iid.png&quot;, width = 5, height = 5, units = &quot;in&quot;, res = 1000)
+png(&quot;../figures/ecdf_iid.png&quot;, width = 5, height = 5, units = &quot;in&quot;, res = 300)
 
 par(mar = c(4.5, 4.5, 2.5, 1))
 

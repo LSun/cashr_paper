@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lei Sun" />
+
+<meta name="date" content="2018-12-13" />
+
+<title>Large-scale realistic simulations with `cashr`: Multiple $g_1$ and $\pi_0$</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">cashr paper</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/LSun/cashr_paper">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Large-scale realistic simulations with <code>cashr</code>: Multiple <span class="math inline">\(g_1\)</span> and <span class="math inline">\(\pi_0\)</span></h1>
+<h4 class="author"><em>Lei Sun</em></h4>
+<h4 class="date"><em>2018-12-13</em></h4>
+
+</div>
+
+
+<p><strong>Last updated:</strong> 2018-12-19</p>
+<strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
+<ul>
+<li>
+<details>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>R Markdown file:</strong> up-to-date </summary></p>
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</details>
+</li>
+<li>
+<details>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Environment:</strong> empty </summary></p>
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</details>
+</li>
+<li>
+<details>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Seed:</strong> <code>set.seed(777)</code> </summary></p>
+<p>The command <code>set.seed(777)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</details>
+</li>
+<li>
+<details>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Session information:</strong> recorded </summary></p>
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</details>
+</li>
+<li>
+<details>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/86e9fcca6d8944d4c5a0296e5ba811daeff2447b" target="_blank">86e9fcc</a> </summary></p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/cashr_paper_fig_FDPsimNoise_cache/
+    Ignored:    analysis/cashr_paper_fig_FDPsim_cache/
+    Ignored:    analysis/cashr_paper_fig_deconv_cache/
+    Ignored:    analysis/cashr_paper_fig_ecdf_cache/
+
+</code></pre>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</details>
+</li>
+</ul>
+<details>
+<summary> <small><strong>Expand here to see past versions:</strong></small> </summary>
+<ul>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+File
+</th>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+<th style="text-align:left;">
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/LSun/cashr_paper/blob/86e9fcca6d8944d4c5a0296e5ba811daeff2447b/analysis/cashr_paper_fig_FDPsim.rmd" target="_blank">86e9fcc</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-19
+</td>
+<td style="text-align:left;">
+wflow_publish(c(“analysis/cashr_paper_fig_FDPsim.rmd”, “analysis/cashr_paper_fig_ecdf.rmd”,
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/LSun/cashr_paper/blob/ca27f78714bb4c4f0edcdaa9c899bf313112825e/analysis/cashr_paper_fig_FDPsim.rmd" target="_blank">ca27f78</a>
+</td>
+<td style="text-align:left;">
+Lei Sun
+</td>
+<td style="text-align:left;">
+2018-12-15
+</td>
+<td style="text-align:left;">
+plotting FDP simulations
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/LSun/cashr_paper/blob/7d1446de39af2cabda06b7b1653f3abc141a9e96/analysis/cashr_paper_fig_FDPsim.rmd" target="_blank">7d1446d</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-15
+</td>
+<td style="text-align:left;">
+realistic simulations
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/LSun/cashr_paper/blob/3156f6fabc7f5132f1bd2aaa716f4324086390d1/analysis/cashr_paper_fig_FDPsim.rmd" target="_blank">3156f6f</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-15
+</td>
+<td style="text-align:left;">
+FDP simulations
+</td>
+</tr>
+</tbody>
+</table>
+</ul>
+</details>
+<hr />
+<ul>
+<li>This file will take ~30 hours to knit.</li>
+</ul>
+<pre class="r"><code>## load the data
+r &lt;- readRDS(&quot;../data/liver.rds&quot;)</code></pre>
+<pre class="r"><code>## load the script
+source(&quot;../code/RNAseq_pipeline.R&quot;)</code></pre>
+<pre class="r"><code>## common simulation settings
+ngene &lt;- 1e4
+nsamp &lt;- 5
+group &lt;- rep(0 : 1, each = nsamp)
+pi0.vec &lt;- c(0.5, 0.9, 0.99)
+q &lt;- 0.1 # nominal FDR
+
+## choose the 1e4 most expressed genes
+Y = lcpm(r)
+subset = top_genes_index(ngene, Y)
+r = r[subset,]
+
+## multiple testing methods
+method.names &lt;- c(&quot;cashr&quot;, &quot;BH&quot;, &quot;qvalue&quot;, &quot;ashr&quot;, &quot;locfdr&quot;)
+method.col &lt;- scales::hue_pal()(length(method.names))[c(5, 1, 2, 4, 3)]</code></pre>
+<pre class="r"><code>g1names &lt;- c(
+  &quot;Gaussian&quot;,
+  &quot;Near Gaussian&quot;,
+  &quot;Spiky&quot;,
+  &quot;Skew&quot;,
+  &quot;Flat Top&quot;,
+  &quot;Bimodal&quot;
+)
+
+sim.theta &lt;- list(
+  function (ngene, pi0) {
+    ## Gaussian
+    sample(c(
+    rep(0, round(pi0 * ngene)),
+    rnorm(round((1 - pi0) * ngene), 0, 2)
+    ))
+  },
+  function (ngene, pi0) {
+    ## near Gaussian
+    sample(c(
+    rep(0, round(pi0 * ngene)),
+    rnorm(round((1 - pi0) * 0.6 * ngene)),
+    rnorm(round((1 - pi0) * 0.4 * ngene), 0, 3)
+    ))
+  },
+  function (ngene, pi0) {
+    ## spiky
+    sample(c(
+    rep(0, round(pi0 * ngene)),
+    rnorm(round((1 - pi0) * 0.4 * ngene), 0, 0.5),
+    rnorm(round((1 - pi0) * 0.2 * ngene), 0, 2),
+    rnorm(round((1 - pi0) * 0.4 * ngene), 0, 3)
+    ))
+  },
+  function (ngene, pi0) {
+    ## skew
+    sample(c(
+    rep(0, round(pi0 * ngene)),
+    rnorm(round((1 - pi0) * 0.25 * ngene), -2, 2),
+    rnorm(round((1 - pi0) * 0.25 * ngene), -1, 2),
+    rnorm(round((1 - pi0) * 0.25 * ngene), 0, 1),
+    rnorm(round((1 - pi0) * 0.25 * ngene), 1, 1)
+    ))
+  },
+  function (ngene, pi0) {
+    ## flat top
+    sample(c(
+    rep(0, round(pi0 * ngene)),
+    rnorm(round((1 - pi0) * 0.5 * ngene), -1.5, 1.5),
+    rnorm(round((1 - pi0) * 0.5 * ngene), 1.5, 1.5)
+    ))
+  },
+  function (ngene, pi0) {
+    ## bimodal
+    sample(c(
+    rep(0, round(pi0 * ngene)),
+    rnorm(round((1 - pi0) * 0.5 * ngene), -1.5, 1),
+    rnorm(round((1 - pi0) * 0.5 * ngene), 1.5, 1)
+    ))
+  }
+)
+
+XDP &lt;- function (theta, qvalue, q) {
+  disc &lt;- (qvalue &lt;= q)
+  num.disc &lt;- sum(disc)
+  num.false.disc &lt;- sum(theta[disc] == 0)
+  num.true.disc &lt;- sum(theta[disc] != 0)
+  num.true &lt;- sum(theta != 0)
+  FDP &lt;- num.false.disc / max(1, num.disc, na.rm = TRUE)
+  TDP &lt;- num.true.disc / num.true
+  return(list(FDP = FDP, TDP = TDP))
+}</code></pre>
+<pre class="r"><code>nsim &lt;- 3e3
+
+set.seed(777)
+
+sim.FDP &lt;- sim.TDP &lt;- c()
+
+for (i in seq(sim.theta)) {
+  for (j in seq(nsim)) {
+    ## simulate correlated null z-scores
+    counts &lt;- r[, sample(ncol(r), 2 * nsamp)]
+    summary &lt;- count_to_summary(counts, group)
+    Z &lt;- summary$z
+    sd.Z &lt;- sd(Z)
+    
+    ## simulate and normalize standard deviations
+    s &lt;- summary$s
+    s &lt;- s / sqrt(mean(s^2))
+    
+    ## simulate normal means theta
+    pi0 &lt;- sample(pi0.vec, 1)
+    theta &lt;- sim.theta[[i]](ngene, pi0)
+    
+    ## construct observations
+    X &lt;- theta + s * Z
+    
+    ## test statistics
+    z &lt;- X / s
+    p = pnorm(-abs(z)) * 2
+    
+    ## apply different methods
+    fit.BH &lt;- p.adjust(p, method = &quot;BH&quot;)
+    XDP.BH &lt;- XDP(theta, fit.BH, q)
+
+    fit.qvalue &lt;- qvalue::qvalue(p)
+    qvalue.qvalue &lt;- fit.qvalue$qvalues
+    XDP.qvalue &lt;- XDP(theta, qvalue.qvalue, q)
+    
+    fit.locfdr &lt;- tryCatch(locfdr::locfdr(z, plot = 0), error = function(e) {NA})
+    qvalue.locfdr &lt;- tryCatch(ashr::qval.from.lfdr(fit.locfdr$fdr), error = function(e) {rep(NA, ngene)})
+    XDP.locfdr &lt;- XDP(theta, qvalue.locfdr, q)
+
+    fit.ashr &lt;- ashr::ash(X, s, mixcompdist = &quot;normal&quot;, method = &quot;fdr&quot;)
+    qvalue.ashr &lt;- ashr::get_qvalue(fit.ashr)
+    XDP.ashr &lt;- XDP(theta, qvalue.ashr, q)
+    
+    fit.cashr &lt;- cashr::cash(X, s)
+    qvalue.cashr &lt;- fit.cashr$qvalue
+    XDP.cashr &lt;- XDP(theta, qvalue.cashr, q)
+    
+    ## FDP aggregated
+    sim.FDP &lt;- rbind.data.frame(sim.FDP, data.frame(
+      g1 = g1names[i],
+      pi0 = pi0,
+      sdZ = sd.Z,
+
+      cashr = XDP.cashr$FDP,
+      BH = XDP.BH$FDP,
+      qvalue = XDP.qvalue$FDP,
+      ashr = XDP.ashr$FDP,
+      locfdr = XDP.locfdr$FDP
+    ))
+    
+    ## TDP aggregated
+    sim.TDP &lt;- rbind.data.frame(sim.TDP, data.frame(
+      g1 = g1names[i],
+      pi0 = pi0,
+      sdZ = sd.Z,
+
+      cashr = XDP.cashr$TDP,
+      BH = XDP.BH$TDP,
+      qvalue = XDP.qvalue$TDP,
+      ashr = XDP.ashr$TDP,
+      locfdr = XDP.locfdr$TDP
+    ))
+  }
+}</code></pre>
+<pre class="r"><code>saveRDS(sim.FDP, &#39;../output/sim.FDP.rds&#39;)
+saveRDS(sim.TDP, &#39;../output/sim.TDP.rds&#39;)</code></pre>
+<pre class="r"><code>sim.FDP &lt;- readRDS(&quot;../output/sim.FDP.rds&quot;)
+sim.TDP &lt;- readRDS(&quot;../output/sim.TDP.rds&quot;)</code></pre>
+<pre class="r"><code>library(ggplot2)
+
+boxplot.quantile.sq &lt;- function (x) {
+  r &lt;- sqrt(quantile(x^2, probs = c(0.05, 0.25, 0.5, 0.75, 0.95)))
+  names(r) &lt;- c(&quot;ymin&quot;, &quot;lower&quot;, &quot;middle&quot;, &quot;upper&quot;, &quot;ymax&quot;)
+  return(r)
+}
+
+mean.sq &lt;- function (x) {
+  r &lt;- sqrt(mean(x^2))
+  return(r)
+}
+
+mysqrt_trans &lt;- function() {
+  scales::trans_new(&quot;mysqrt&quot;, 
+                    transform = base::sqrt,
+                    inverse = function(x) ifelse(x&lt;0, 0, x^2),
+                    domain = c(0, Inf))
+}</code></pre>
+<div id="distribution-of-fdp" class="section level2">
+<h2>Distribution of FDP</h2>
+<pre class="r"><code>FDP.ggdata &lt;- reshape2::melt(sim.FDP, id.vars = c(&quot;g1&quot;, &quot;pi0&quot;, &quot;sdZ&quot;), variable.name = &quot;method&quot;, value.name = &quot;FDP&quot;)</code></pre>
+<pre class="r"><code>FDP.plot &lt;- ggplot(data = FDP.ggdata, aes(x = method, y = FDP, fill = method, color = method)) +
+  stat_summary(fun.data = boxplot.quantile.sq, geom = &quot;boxplot&quot;, position = &quot;dodge&quot;, aes(width = 0.75), show.legend = FALSE) +
+  stat_summary(fun.y = mean.sq, geom = &quot;point&quot;, position = position_dodge(width = 0.9), show.legend = FALSE, shape = 13, size = 3) +
+  scale_color_manual(labels = method.names, values = method.col) +
+  scale_fill_manual(labels = method.names, values = alpha(method.col, 0.35)) +
+  scale_y_continuous(trans = &quot;mysqrt&quot;, breaks = c(0, 0.1, 0.2, 0.4, 0.6, 0.8)) +
+  facet_grid(pi0 ~ g1, labeller = label_bquote(rows = pi[0] == .(pi0))) +
+  scale_x_discrete(limits = rev(levels(FDP.ggdata$method))) +
+  coord_flip() +
+  geom_hline(yintercept = q, col = &quot;black&quot;, linetype = &quot;dashed&quot;, size = 1) +
+  labs(y = &quot;FDP&quot;) +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 15),
+        axis.title.x = element_text(size = 15),
+        axis.text.x = element_text(size = 12),
+        strip.text = element_text(size = 15),
+        legend.position = &quot;bottom&quot;,
+        legend.background = element_rect(color = &quot;grey&quot;),
+        legend.text = element_text(size = 12))</code></pre>
+</div>
+<div id="density-of-g_1" class="section level2">
+<h2>Density of <span class="math inline">\(g_1\)</span></h2>
+<pre class="r"><code>plotx &lt;- seq(-6, 6, by = 0.01)
+
+g1.density &lt;- cbind.data.frame(
+  plotx,
+  dnorm(plotx, 0, 2),
+  0.6 * dnorm(plotx) +
+    0.4 * dnorm(plotx, 0, 3),
+  0.4 * dnorm(plotx, 0, 0.5) +
+    0.2 * dnorm(plotx, 0, 2) +
+    0.4 * dnorm(plotx, 0, 3),
+  0.25 * dnorm(plotx, -2, 2) +
+    0.25 * dnorm(plotx, -1, 2) +
+    0.25 * dnorm(plotx, 0, 1) +
+    0.25 * dnorm(plotx, 1, 1),
+  0.5 * dnorm(plotx, -1.5, 1.5) +
+    0.5 * dnorm(plotx, 1.5, 1.5),
+  0.5 * dnorm(plotx, -1.5, 1) +
+    0.5 * dnorm(plotx, 1.5, 1)
+)
+
+colnames(g1.density)[-1] &lt;- g1names
+
+g1.ggdata &lt;- reshape2::melt(g1.density,
+                            id.vars = &quot;plotx&quot;,
+                            variable.name = &quot;g1&quot;,
+                            value.name = &quot;ploty&quot;)</code></pre>
+<pre class="r"><code>g1.plot &lt;- ggplot(data = g1.ggdata, aes(x = plotx, y = ploty)) +
+  geom_line() +
+  facet_wrap(~ g1, nrow = 1) +
+  labs(x = expression(theta), y = expression(g[1](theta))) +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_text(size = 10),
+        axis.title.y = element_text(size = 15),
+        axis.text.y = element_text(size = 10),
+        strip.text = element_text(size = 15),
+        legend.position = &quot;none&quot;,
+        legend.background = element_rect(color = &quot;grey&quot;),
+        legend.text = element_text(size = 12))</code></pre>
+</div>
+<div id="root-mse-of-fdp-from-nominal-fdr" class="section level2">
+<h2>Root MSE of FDP from nominal FDR</h2>
+<pre class="r"><code>sqrtMSE.ggdata &lt;- aggregate(FDP ~ method + pi0 + g1, data = FDP.ggdata, FUN = function (x, q) {sqrt(mean((x - q)^2))}, q = q)
+
+names(sqrtMSE.ggdata)[names(sqrtMSE.ggdata) == &quot;FDP&quot;] = &#39;rootMSE&#39;</code></pre>
+<pre class="r"><code>sqrtMSE.plot &lt;- ggplot(data = sqrtMSE.ggdata,
+                       aes(x = factor(pi0),
+                           y = rootMSE,
+                           group = method,
+                           col = method,
+                           linetype = method,
+                           shape = method)) +
+  geom_line(size = 1.25) +
+  geom_point(size = 3) + 
+  scale_color_manual(values = method.col) +
+  facet_wrap(~ g1, nrow = 1) +
+  expand_limits(y = 0) +
+  labs(y = &#39;Root MSE&#39;, x = expression(pi[0])) +
+  theme(
+    axis.title.y = element_text(size = 15),
+    axis.text.y = element_text(size = 12),
+    axis.title.x = element_text(size = 15),
+    axis.text.x = element_text(size = 12),
+    strip.text = element_text(size = 15),
+    legend.text = element_text(size = 15),
+    legend.title = element_blank()
+  )</code></pre>
+</div>
+<div id="distribution-of-tdp" class="section level2">
+<h2>Distribution of TDP</h2>
+<pre class="r"><code>TDP.ggdata &lt;- reshape2::melt(sim.TDP, id.vars = c(&quot;g1&quot;, &quot;pi0&quot;, &quot;sdZ&quot;), variable.name = &quot;method&quot;, value.name = &quot;TDP&quot;)
+
+meanTDP.ggdata &lt;- aggregate(TDP ~ method + pi0 + g1, data = TDP.ggdata, FUN = &quot;mean&quot;)
+
+names(meanTDP.ggdata)[names(meanTDP.ggdata) == &quot;TDP&quot;] = &#39;meanTDP&#39;</code></pre>
+<pre class="r"><code>meanTDP.plot &lt;- ggplot(data = meanTDP.ggdata,
+                       aes(x = factor(pi0),
+                           y = meanTDP,
+                           group = method,
+                           col = method,
+                           linetype = method,
+                           shape = method)) +
+  geom_line(size = 1.25) +
+  geom_point(size = 3) + 
+  scale_color_manual(values = method.col) +
+  facet_wrap(~ g1, nrow = 1) +
+  expand_limits(y = 0) +
+  labs(y = &#39;Mean TDP&#39;, x = expression(pi[0])) +
+  theme(
+    axis.title.y = element_text(size = 15),
+    axis.text.y = element_text(size = 12),
+    axis.title.x = element_text(size = 15),
+    axis.text.x = element_text(size = 12),
+    strip.text = element_text(size = 15),
+    legend.text = element_text(size = 15),
+    legend.title = element_blank()
+  )</code></pre>
+</div>
+<div id="put-together" class="section level2">
+<h2>Put together</h2>
+<pre class="r"><code>FDP_rootMSE_meanTDP_g1_pi0.plot &lt;- gridExtra::arrangeGrob(
+  g1.plot + 
+    labs(title = expression(paste(&#39;(a): Distribution &#39;, g[1], &#39; of non-null effects&#39;))) +
+    theme(plot.margin = grid::unit(c(20, 92, 20, 10), &quot;points&quot;)) +
+    theme(plot.title = element_text(size = 15)),
+
+  FDP.plot +
+    labs(title = bquote(paste(&#39;(b): Distribution of FDP&#39;))) +
+    theme(strip.text.x = element_blank(),
+          plot.title = element_text(size = 15),
+          plot.margin = grid::unit(c(5.5, 67.5, 5.5, 5.5), &#39;points&#39;)
+    ),
+  
+  sqrtMSE.plot +
+    labs(title = &#39;(c): Root MSE of FDP from nominal FDR&#39;) +
+    theme(strip.text = element_blank(),
+          plot.title = element_text(size = 15),
+          plot.margin = grid::unit(c(5.5, 5.5, 5.5, 15), &#39;points&#39;)
+    ),
+
+  meanTDP.plot +
+    labs(title = &#39;(d): Mean of TDP&#39;) +
+    theme(strip.text = element_blank(),
+          plot.title = element_text(size = 15),
+          plot.margin = grid::unit(c(5.5, 5.5, 5.5, 15), &#39;points&#39;)
+    ),
+
+  heights = c(1.7, 2, 1.5, 1.5),
+
+  top = grid::textGrob(bquote(paste(&quot;Nominal FDR = &quot;, .(q))), gp = grid::gpar(fontsize = 17), hjust = 3.6)
+)
+
+ggsave(&quot;../figures/FDP_sqrtMSE_meanTDP_g1_pi0.pdf&quot;, FDP_rootMSE_meanTDP_g1_pi0.plot, height = 13.5, width = 15)</code></pre>
+</div>
+<div id="disclaimer" class="section level2">
+<h2>Disclaimer</h2>
+<p>The RNA-seq data set used in this file for realistic simulations was created from the real human liver tissue RNA-seq gene expression read counts. In particular, the sample and gene identifiers have been removed from the data.</p>
+<p>The RNA-seq gene expression data were originally generated by the GTEx Project, which was supported by the Common Fund of the Office of the Director of the National Institutes of Health, and by NCI, NHGRI, NHLBI, NIDA, NIMH, and NINDS. The data used for the analyses described in this paper were obtained from the GTEx Portal at <a href="https://www.gtexportal.org">the GTEx Portal</a>.</p>
+</div>
+<div id="session-information" class="section level2">
+<h2>Session information</h2>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.4.3 (2017-11-30)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS  10.14.1
+
+Matrix products: default
+BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] ggplot2_3.1.0
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_0.12.16      compiler_3.4.3    pillar_1.2.2     
+ [4] git2r_0.23.0      plyr_1.8.4        workflowr_1.1.1  
+ [7] bindr_0.1.1       R.methodsS3_1.7.1 R.utils_2.6.0    
+[10] tools_3.4.3       digest_0.6.15     evaluate_0.10.1  
+[13] tibble_1.4.2      gtable_0.2.0      pkgconfig_2.0.1  
+[16] rlang_0.3.0.1     yaml_2.1.19       bindrcpp_0.2.2   
+[19] gridExtra_2.3     withr_2.1.2       stringr_1.3.1    
+[22] dplyr_0.7.4       knitr_1.20        rprojroot_1.3-2  
+[25] grid_3.4.3        glue_1.2.0        R6_2.2.2         
+[28] rmarkdown_1.9     reshape2_1.4.3    magrittr_1.5     
+[31] whisker_0.3-2     backports_1.1.2   scales_0.5.0     
+[34] htmltools_0.3.6   assertthat_0.2.0  colorspace_1.3-2 
+[37] labeling_0.3      stringi_1.2.2     lazyeval_0.2.1   
+[40] munsell_0.4.3     R.oo_1.22.0      </code></pre>
+</div>
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+<hr>
+<p>
+  This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a>
+  analysis was created with
+  <a href="https://github.com/jdblischak/workflowr">workflowr</a> 1.1.1
+</p>
+<hr>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
