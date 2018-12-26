@@ -332,7 +332,7 @@ div.section {
 </div>
 
 
-<p><strong>Last updated:</strong> 2018-12-19</p>
+<p><strong>Last updated:</strong> 2018-12-26</p>
 <strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
 <ul>
 <li>
@@ -361,7 +361,7 @@ div.section {
 </li>
 <li>
 <details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/86e9fcca6d8944d4c5a0296e5ba811daeff2447b" target="_blank">86e9fcc</a> </summary></p>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/LSun/cashr_paper/tree/26b3dde918e868047e8e3984f266a9f2f853caf5" target="_blank">26b3dde</a> </summary></p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 <pre><code>
 Ignored files:
@@ -403,6 +403,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="text-align:left;">
+rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/LSun/cashr_paper/blob/26b3dde918e868047e8e3984f266a9f2f853caf5/analysis/cashr_paper_fig_FDPsim.rmd" target="_blank">26b3dde</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-26
+</td>
+<td style="text-align:left;">
+wflow_publish(“analysis/cashr_paper_fig_FDPsim.rmd”)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+html
+</td>
+<td style="text-align:left;">
+<a href="https://cdn.rawgit.com/LSun/cashr_paper/6287057f2cafbaac47ef9d83739b7ed00a529e89/docs/cashr_paper_fig_FDPsim.html" target="_blank">6287057</a>
+</td>
+<td style="text-align:left;">
+LSun
+</td>
+<td style="text-align:left;">
+2018-12-19
+</td>
+<td style="text-align:left;">
+Build site.
+</td>
+</tr>
 <tr>
 <td style="text-align:left;">
 rmd
@@ -570,9 +604,9 @@ XDP &lt;- function (theta, qvalue, q) {
   TDP &lt;- num.true.disc / num.true
   return(list(FDP = FDP, TDP = TDP))
 }</code></pre>
-<pre class="r"><code>nsim &lt;- 3e3
+<pre class="r"><code>nsim &lt;- 1e3
 
-set.seed(777)
+set.seed(7)
 
 sim.FDP &lt;- sim.TDP &lt;- c()
 
