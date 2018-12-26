@@ -117,9 +117,9 @@ XDP <- function (theta, qvalue, q) {
 ```
 
 ```{r cache = TRUE}
-nsim <- 3e3
+nsim <- 1e3
 
-set.seed(777)
+set.seed(7)
 
 sim.FDP <- sim.TDP <- c()
 
