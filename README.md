@@ -59,7 +59,7 @@ Data
 
 This project is created with [workflowr][]. Special thanks to [David Gerard][], [Peter Carbonetto][], [John Blischak][]. If you find a bug, please create an [issue](https://github.com/LSun/cashr_paper/issues).
 
-[the accompanion website for the paper]: https://lsun.github.io/cashr_paper/
+[the accompanion website to the paper]: https://lsun.github.io/cashr_paper/
 [Sun and Stephens (2018)]: https://arxiv.org/abs/1812.07488
 [Lei Sun]: https://github.com/LSun
 [Matthew Stephens]: http://stephenslab.uchicago.edu/
