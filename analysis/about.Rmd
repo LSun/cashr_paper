@@ -5,4 +5,6 @@ output:
     toc: false
 ---
 
-A repository providing data and code to document and reproduce all results and plots in Sun and Stephens (2018).
+A companion repository to [Sun and Stephens (2018)][] providing code and data resources.
+
+[Sun and Stephens (2018)]: https://arxiv.org/abs/1812.07488

@@ -1,12 +1,12 @@
 ---
-title: "Reproducing Sun and Stephens (2018)"
+title: "Code and data resources accompanying [Sun and Stephens (2018)][]"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
     toc: false
 ---
 
-We provide resources to reproduce Sun and Stephens (2018). Simply click `Code` on the following pages to see all the `R` code used to generate the results and plots in the paper.
+We provide data and code resources accompanying [Sun and Stephens (2018)][]. The following pages display `R` code used to generate the results and figures in the paper.
 
 * [Figure 1: Histograms of correlated $N(0,1)$ null $z$-scores](cashr_paper_fig_corN01.html)
 * [Figure 2: Deconvolution by EBNM methods with correlated and independent noise](cashr_paper_fig_deconv.html)
@@ -16,3 +16,5 @@ We provide resources to reproduce Sun and Stephens (2018). Simply click `Code` o
 * [Figure 6: Simulation results tratified by patterns of correlation-induced distortion patterns](cashr_paper_fig_FDPsimNoise.html)
 * [Figure 7 and Table 1: Analyzing leukemia and mouse data](cashr_paper_fig_leukmouse.html)
 * [Figure A.1 and A.2: Evidence to show the realistically simulated null $z$-scores are indeed margianlly $N(0,1)$](cashr_paper_fig_ecdf.html)
+
+[Sun and Stephens (2018)]: https://arxiv.org/abs/1812.07488
