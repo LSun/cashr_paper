@@ -322,7 +322,7 @@ FDP_TDP_Z.plot <- gridExtra::arrangeGrob(
 
   heights = c(1.1, 1, 1),
   top = grid::textGrob(label = bquote(paste(
-    'Nominal FDR = ', .(q), ' (', g[1], ' is Guassian; ', pi[0] == 0.9, ')')), gp = grid::gpar(fontsize = 15, fontface = 'bold'), hjust = 1.125)
+    'Nominal FDR = ', .(q), ' (', g[1], ' is Gaussian; ', pi[0] == 0.9, ')')), gp = grid::gpar(fontsize = 15, fontface = 'bold'), hjust = 1.125)
 )
 
 ggsave("../figures/FDP_TDP_Z.pdf", FDP_TDP_Z.plot, height = 7, width = 10)
