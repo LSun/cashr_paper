@@ -1,0 +1,49 @@
+---
+title: "Histogram of gene-gene correlation in GTEx liver data"
+author: "Lei Sun"
+date: "2020-04-22"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r}
+## load the data
+r <- readRDS("../data/liver.rds")
+```
+
+```{r}
+## load the script of RNA-seq pipeline
+source("../code/RNAseq_pipeline.R")
+```
+
+```{r}
+## numbers of genes and sample correlations
+ngene <- 1e4
+ncor <- 1e4
+
+## choose the 1e4 most expressed genes
+Y = lcpm(r)
+subset = top_genes_index(ngene, Y)
+Y = Y[subset, ]
+```
+
+```{r}
+set.seed(777)
+pair.index <- c()
+sample.cor <- c()
+for (i in seq(ncor)) {
+  sample.1 <- sample(ngene, 1)
+  sample.2 <- sample(setdiff(seq(ngene), c(pair.index[pair.index[, 1] == sample.1, 2], pair.index[pair.index[, 2] == sample.1, 1], sample.1)), 1)
+  sample.cor <- c(sample.cor, cor(as.numeric(Y[sample.1, ]), as.numeric(Y[sample.2, ])))
+  pair.index <- rbind(pair.index, c(sample.1, sample.2))
+}
+```
+
+```{r}
+pdf("../figures/geneCor.pdf", height = 4.5, width = 7)
+
+hist(sample.cor, xlab = "Gene-Gene Sample Correlation", main = expression(paste("Histogram of ", 10^4, " Gene-Gene Correlations")))
+
+dev.off()
+```
